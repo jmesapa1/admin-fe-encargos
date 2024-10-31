@@ -1,0 +1,311 @@
+<div class="row">
+  <ng-container>
+  <!-- order-card start -->
+  @for (card of cards; track card) {
+  <div class="col-md-6 col-xl-3">
+    <app-card [hidHeader]="true" cardClass="{{ card.background }} order-card">
+      <h6 class="text-white"><b>{{ card.title }}</b></h6>
+      <h2 class="text-end text-white">
+        <i *ngIf="!card.img" class="feather {{ card.icon }}  float-start"></i>
+        <img class="float-start" style="color:white;width: {{card.widthImg}}" *ngIf="card.img" src="{{card.img}}">
+        <span>{{ card.number | number }} <span *ngIf="card.number2" style="font-size: 20px !important;"> /
+            ${{card.number2 | number}}</span></span>
+      </h2>
+      <p class="m-b-0">
+        {{ card.text }}
+        <span class="float-end">{{ card.no | number}}<span *ngIf="card.no2 || card.no2>=0"> / ${{ card.no2 |
+            number}}</span></span>
+
+      </p>
+    </app-card>
+  </div>
+  }
+  <!-- order-card end -->
+
+  <!-- account-section start -->
+
+  <!--<div class="col-md-6 col-lg-4">
+    <app-card [hidHeader]="true" blockClass="text-center" *ngIf="this.graficas">
+      <i class="fa fa-user-circle text-c-blue d-block f-40"></i>
+      <h4 class="m-t-20">
+        <span class="text-c-blue">Total</span>
+        Clientes
+      </h4>
+      <h3 class="m-b-20">{{this.clientes.length}}</h3>
+    </app-card>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <app-card [hidHeader]="true" blockClass="text-center">
+      <i class="fab fa-twitter text-c-green d-block f-40"></i>
+      <h4 class="m-t-20">
+        <span class="text-c-green">Clientes</span>
+        Whatsapp
+      </h4>
+      <p class="m-b-20">Clientes que nos buscaron por whatsapp</p>
+    </app-card>
+  </div>-->
+  <!-- account-section end -->
+
+  <!-- conversion-section start -->
+ <!--<div class="col-lg-4 col-md-12">
+    <app-card [hidHeader]="true" footerClass="border border-top-0 p-0 overflow-hidden" [isCardFooter]="true">
+      <h6>Ventas respecto mes anterior</h6>
+      <h4 class="m-0">
+        0.85%
+        <span class="text-c-blue ms-2">
+          <i class="feather icon-arrow-up"></i>
+          0.50%
+        </span>
+      </h4>
+      <span>Vendido</span>
+      <div class="app-card-footer"></div>
+    </app-card>-->
+    <!--<app-card [hidHeader]="true" footerClass="border border-top-0 p-0 overflow-hidden" [isCardFooter]="true">
+      <h6>Compras respecto mes anterior</h6>
+      <h4 class="m-0">
+        0.85%
+        <span class="text-c-red ms-2">
+          <i class="feather icon-arrow-up"></i>
+          0.50%
+        </span>
+      </h4>
+      <span>Comprado</span>
+      <div class="app-card-footer"></div>
+    </app-card>
+  </div>-->
+  <div class="col-xl-12 col-md-12">
+    <div class="row">
+      <div class="col-xl-6 col-md-12 col-md-12">
+        <app-card [hidHeader]="true" *ngIf="chartOptions_1">
+          <div class="row">
+            <div class="col-auto">
+              <span>Cartera de pedidos</span>
+            </div>
+            <div class="col text-end">
+              <h2 class="mb-0">${{totalVentas | number}}</h2>
+              <span class="text-c-green">
+                {{porcentajeCartera | number}}%
+                <i class="feather icon-trending-up ms-1"></i>
+              </span>
+            </div>
+          </div>
+          <apx-chart [series]="chartOptions_1.series!" [chart]="chartOptions_1.chart!" [stroke]="chartOptions_1.stroke!"
+            [dataLabels]="chartOptions_1.dataLabels!" [labels]="chartOptions_1.labels!"
+            [legend]="chartOptions_1.legend!" [colors]="chartOptions_1.colors!" [fill]="chartOptions_1.fill!"
+            [grid]="chartOptions_1.grid!" [plotOptions]="chartOptions_1.plotOptions!"
+            [tooltip]="chartOptions_1.tooltip!"></apx-chart>
+          <div class="row mt-3 text-center">
+            <div class="col">
+              <h4 class="m-0">
+                <i class="fas fa-circle f-10 m-r-5 text-success"></i>
+                ${{totalVentas-totalCartera | number}}
+              </h4>
+              <span class="ms-3">Abonos</span>
+            </div>
+            <div class="col">
+              <h4 class="m-0">
+                <i class="fas fa-circle text-primary f-10 m-r-5"></i>
+                ${{totalCartera | number}}
+              </h4>
+              <span class="ms-3">Cartera</span>
+            </div>
+          </div>
+        </app-card>
+      </div>
+      <div class="col-md-12 col-xl-6 " *ngIf="chartOptions_3">
+        <app-card [hidHeader]="true" cardClass="seo-card" blockClass="seo-statustic"
+          footerClass="seo-chart border border-top-0 p-0 overflow-hidden" [isCardFooter]="true">
+          <p>Semana a Semana 1 - 7,  8 - 16,  17 - 24,  25 - 31 </p>
+          <div class="row" style="min-width: 380px;">
+            <div class="col-md-6">
+              <i class="feather icon-arrow-down f-20 text-c-red"></i>
+              <h5 class="mb-1">${{totalCompras | number}}</h5>
+              <p>Compras</p>
+            </div>
+            <div class="col-md-6">
+              <i class="feather icon-arrow-up f-20 text-c-blue"></i>
+              <h5 class="mb-1">${{abonosMes | number}}</h5>
+              <p>Abonos + Creditos</p>
+            </div>
+          </div>
+
+          <div class="app-card-footer">
+            <apx-chart [series]="chartOptions_3.series!" [chart]="chartOptions_3.chart!"
+              [stroke]="chartOptions_3.stroke!" [dataLabels]="chartOptions_3.dataLabels!"
+              [colors]="chartOptions_3.colors!" [fill]="chartOptions_3.fill!" [tooltip]="chartOptions_3.tooltip!"
+              [yaxis]="chartOptions_3.yaxis!"></apx-chart>
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-12 col-md-12">
+    <app-card cardTitle="Flujo de ingresos - egresos" *ngIf="chartOptions!==undefined" [options]="false">
+      <div class="text-center">
+        <h6 class=""><b>Balance : </b></h6>
+        <h2 [class.text-c-red]="this.pagos[this.pagos.length-1]?.acumulado<0"
+          [class.text-c-green]="this.pagos[this.pagos.length-1]?.acumulado>0">
+          ${{this.pagos[this.pagos.length-1]?.acumulado | number}}
+        </h2>
+      </div>
+
+      <ul ngbNav #nav2="ngbNav" aria-busy="true" class="nav-pills">
+        <li [ngbNavItem]="1" class="flex">
+          <a ngbNavLink>
+            <i class="fa fa-home m-r-10"></i>
+            Grafica
+          </a>
+          <ng-template ngbNavContent>
+
+            <apx-chart [chart]="chartOptions.chart!" [dataLabels]="chartOptions.dataLabels!"
+              [stroke]="chartOptions.stroke!" [series]="chartOptions.series!" [xaxis]="chartOptions.xaxis!"
+              [colors]="chartOptions.colors!" [fill]="chartOptions.fill!" [markers]="chartOptions.markers!"
+              [yaxis]="chartOptions.yaxis!"></apx-chart>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2" class="flex">
+          <a ngbNavLink>
+            <i class="fa fa-home m-r-10"></i>
+            Registros
+          </a>
+          <ng-template ngbNavContent>
+            <table class="table table-main table-hover m-b-0 mt-3">
+              <thead>
+                <th><span>Fecha</span></th>
+                <th><span>Tipo</span></th>
+                <th><span>Valor</span></th>
+                <th><span>Descripción</span></th>
+                <th><span>Acumulado</span></th>
+
+              </thead>
+              <tbody>
+                @for (pago of this.pagos; track pago;let idx = $index) {
+                <tr *ngIf="pago.pago">
+                  <td>{{ pago.date }}</td>
+                  <td [class.text-success]="pago.tipo==='in'" [class.text-danger]="pago.tipo==='out'">{{ pago.tipo }}
+                    <i class="feather icon-arrow-up" *ngIf="pago.tipo==='in'"></i>
+                    <i class="feather icon-arrow-down" *ngIf="pago.tipo==='out'"></i>
+                  </td>
+                  <td [class.text-success]="pago.tipo==='in'" [class.text-danger]="pago.tipo==='out'"><b>${{
+                      pago.pago?.amount | number}}</b></td>
+                  @if(pago.tipo==='out'){
+                  <td>Pago proveedor</td>
+                  }
+                  @else if( pago.tipo==='in' && pago.pago.anotation ==='ADDI'){
+                  <td> Abono factura - ADDI</td>
+                  }@else if(pago.pago.anotation ==='SISTECREDITO' && pago.tipo==='in'){
+                  <td>Abono factura - SISTECREDITO</td>
+                  }@else {
+                  <td>Abono factura</td>
+                  }
+                  <td [class.text-success]="pago?.acumulado>0" [class.text-danger]="pago?.acumulado<0">
+                    <b>${{pago?.acumulado | number}}</b></td>
+                </tr>
+                }
+              </tbody>
+
+            </table>
+          </ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="nav2" class="mt-2">
+      </div>
+    </app-card>
+  </div>
+
+
+  <!--<div class="col-md-12">
+    <app-card cardTitle="Monitor de pedidos" cardClass="tab-card tab-content" blockClass="nav-fill" [options]="false">
+      <ul ngbNav #nav="ngbNav" aria-busy="true" class="nav-pills">
+        <li [ngbNavItem]="1" class="flex">
+          <a ngbNavLink>
+            <i class="fa fa-home m-r-10"></i>
+            Pedidos
+          </a>
+          <ng-template ngbNavContent>
+            <div class="table-responsive">
+              <ng-content>
+                <app-product-sale [pedidos]=pedidos [compras]=compras [pendiente]=false></app-product-sale>
+              </ng-content>
+            </div>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2" class="flex">
+          <a ngbNavLink>
+            <i class="fa fa-key m-r-10"></i>
+            Pedidos pendientes relacion
+          </a>
+          <ng-template ngbNavContent>
+            <app-product-sale [pedidos]=pedidos [compras]=compras [pendiente]=true></app-product-sale>
+          </ng-template>
+        </li>
+      </ul>
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </app-card>
+  </div>-->
+  <!--<div class="col-lg-8 col-md-12">
+    <app-card cardTitle="Activity Feed" blockClass="m-t-10" [options]="false">
+      <ul class="feed-blog ps-0">
+        <li class="active-feed">
+          <div class="feed-user-img">
+            <img src="assets/images/user/avatar-4.jpg" class="img-radius" alt="User-Profile-Image" />
+          </div>
+          <h6>
+            <span class="badge bg-danger">File</span>
+            Eddie uploaded new files:
+            <small class="text-muted ms-1">2 hours ago</small>
+          </h6>
+          <p class="m-b-15 m-t-15">
+            hii
+            <b>&#64;everone</b>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy
+            text ever since the 1500s.
+          </p>
+          <div class="row">
+            @for (image of images; track image) {
+            <div class="col-auto text-center">
+              <img src="{{ image.src }}" alt="img" class="img-fluid wid-100" />
+              <h6 class="m-t-15 m-b-0">{{ image.title }}</h6>
+              <p class="text-muted m-b-0">
+                <small>{{ image.size }}</small>
+              </p>
+            </div>
+            }
+          </div>
+        </li>
+        <li class="diactive-feed">
+          <div class="feed-user-img">
+            <img src="assets/images/user/avatar-2.jpg" class="img-radius" alt="User-Profile-Image" />
+          </div>
+          <h6>
+            <span class="badge bg-success">Task</span>
+            Sarah marked the Pending Review:
+            <span class="text-c-green">Trash Can Icon Design</span>
+            <small class="text-muted">2 hours ago</small>
+          </h6>
+        </li>
+        <li class="diactive-feed">
+          <div class="feed-user-img">
+            <img src="assets/images/user/avatar-1.jpg" class="img-radius" alt="User-Profile-Image" />
+          </div>
+          <h6>
+            <span class="badge bg-primary">comment</span>
+            abc posted a task:
+            <span class="text-c-green">Design a new Homepage</span>
+            <small class="text-muted">6 hours ago</small>
+          </h6>
+          <p class="m-b-15 m-t-15">
+            hii
+            <b>&#64;everone</b>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy
+            text ever since the 1500s.
+          </p>
+        </li>
+      </ul>
+    </app-card>
+  </div>-->
+  <!-- conversion-section end -->
+</ng-container>
+</div>

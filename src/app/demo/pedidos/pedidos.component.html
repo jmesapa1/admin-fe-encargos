@@ -1,0 +1,755 @@
+<div class="row btn-page">
+  <!-- [ default-button ] start -->
+  <div class="col-sm-6" *ngIf="pedidosPendientes.length>0">
+    <app-card cardTitle="Pedidos pendientes de relacionar" [options]="false">
+      <table class="table table-main table-hover m-b-0">
+        <thead>
+          <tr>
+            @for (sale of pedidosLbl; track sale) {
+            <th>
+              <span>
+                {{ sale.title }}
+
+              </span>
+            </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+
+          @for (pedido of pedidosPendientes; track pedido) {
+          <tr>
+            <td>{{ pedido.pedido.id }}</td>
+            <td>{{ pedido.pedido.date }}</td>
+            <td>{{ pedido.pedido.items[0].name }}</td>
+            <td>${{ pedido.pedido.total | number}}</td>
+            <td>{{ pedido.cliente.name }}</td>
+            <td>
+              <div class="form-group">
+                <select (change)="asignarCompra($event.target,pedido.id)" class="form-control"
+                  id="exampleFormControlSelect1">
+                  <option selected>ID</option>
+                  <option *ngFor="let compra of compraPendientes" value={{compra.id}}>{{compra.compra.id}}</option>
+                </select>
+              </div>
+            </td>
+          </tr>
+
+          <!--  <td>
+                        <div class="mt-1">
+                  <ngb-progressbar type="{{ progress.color }}" height="4px" [value]="progress.percentage"></ngb-progressbar>
+                </div>
+            </td>-->
+          }
+
+
+        </tbody>
+
+      </table>
+      <div *ngIf="pedidosPendientes.length<=0">
+        <h4 class="text-center">No hay elementos que mostrar</h4>
+      </div>
+    </app-card>
+  </div>
+  <!-- [ default-button ] end -->
+  <!-- [ light-button ] start -->
+  <div class="col-sm-6" *ngIf="compraPendientes.length>0 || comprasEntregaInmediata.length>0">
+    <app-card cardTitle="Compras pendientes de relacionar" [options]="false">
+      <table class="table table-main table-hover m-b-0" *ngIf="compraPendientes.length>0">
+        <thead>
+          <tr>
+            @for (sale of comprasLbl; track sale) {
+            <th>
+              <span>
+                {{ sale.title }}
+
+              </span>
+            </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+
+          @for (compra of compraPendientes; track compra) {
+          <tr>
+            <td><b>{{ compra.id }}</b></td>
+            <td>{{ compra.compra.date }}</td>
+            <td>{{ compra.compra.purchases.items[0].name }}</td>
+            <td>{{ compra.compra.provider.name}}</td>
+            <td>${{ compra.compra.total | number}}</td>
+          </tr>
+          }
+
+
+        </tbody>
+
+      </table>
+
+      <div ngbAccordion>
+        <div ngbAccordionItem *ngIf="comprasEntregaInmediata.length>0"
+          [collapsed]="comprasEntregaInmediata.length<=0 || compraPendientes.length>0">
+          <h2 ngbAccordionHeader>
+            <button ngbAccordionButton>Entrega inmediata</button>
+          </h2>
+          <div ngbAccordionCollapse>
+            <div ngbAccordionBody>
+              <ng-template>
+                <table class="table table-main table-hover m-b-0">
+                  <thead>
+                    <tr>
+                      @for (sale of comprasLbl; track sale) {
+                      <th>
+                        <span>
+                          {{ sale.title }}
+
+                        </span>
+                      </th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    @for (compra of comprasEntregaInmediata; track compra) {
+                    <tr>
+                      <td><b>{{ compra.id }}</b></td>
+                      <td>{{ compra.compra.date }}</td>
+                      <td>{{ compra.compra.purchases.items[0].name }}</td>
+                      <td>{{ compra.compra.provider.name}}</td>
+                      <td>${{ compra.compra.total | number}}</td>
+                    </tr>
+                    }
+
+
+                  </tbody>
+
+                </table>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-sm-12">
+    <app-card cardTitle="Monitor de pedidos y compras" [options]="false">
+
+      <div> <button (click)="filtrar('Falta comprar')" type="button"
+          class="btn btn-icon btn-outline-danger d-inline-flex">
+          <i class="feather icon-alert-triangle"></i> Falta comprar
+        </button>
+        <button type="button" (click)="filtrar('Entregados')" class="btn btn-icon btn-outline-success d-inline-flex">
+          <i class="feather icon-alert-triangle"></i> Entregado
+        </button>
+        <button type="button" (click)="filtrar('En camino a MED')" class="btn btn-icon btn-outline-info d-inline-flex">
+          <i class="feather icon-alert-triangle"></i> En camino a MED
+        </button>
+        <button type="button" (click)="filtrar('En camino USA')" class="btn btn-icon btn-outline-info d-inline-flex">
+          <i class="feather icon-alert-triangle"></i> En camino USA
+        </button>
+        <button type="button" (click)="filtrar('Espera de despacho')" class="btn btn-icon btn-outline-warning d-inline-flex">
+          <i class="feather icon-alert-triangle"></i> Espera de despacho
+        </button>
+        <button type="button" (click)="filtrar('General')" class="btn btn-icon btn-outline-primary d-inline-flex">
+          <i class="feather icon-alert-triangle"></i> General
+        </button>
+      </div>
+      <div>
+        <div class="row">
+
+        <div class="col-md-6 col-xl-3">
+
+          <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
+            <h6 class="text-white text-center"><b>Total pedidos</b></h6>
+            <h4 class="m-b-0 text-center text-white">{{ pedidosContador | number}}</h4>
+          </app-card>
+        </div>
+          <div class="col-md-6 col-xl-3">
+
+          <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
+            <h6 class="text-white text-center"><b>Saldo</b></h6>
+            <h4 class="m-b-0 text-center text-white">${{ pedidosSaldo | number}}</h4>
+          </app-card>
+          </div>
+          <div class="col-md-6 col-xl-3">
+
+          <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
+            <h6 class="text-white text-center"><b>Compras pendientes</b></h6>
+            <h4 class="m-b-0 text-center text-white">${{ compraPendientesSaldo | number}}</h4>
+          </app-card>
+        </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-main table-hover m-b-0 mt-1">
+          <thead>
+            <tr>
+              @for (sale of peidosCompraLbl; track sale) {
+              <th>
+                <span>
+                  {{ sale.title }}
+
+                </span>
+              </th>
+              }
+            </tr>
+          </thead>
+          <tbody *ngIf="this.pedidos!.length>0">
+
+            @for (pedido of pedidos; track pedido.id) {
+            <tr [class.entregado]="pedido.estadoVenta==='Entregados'"
+              [class.camino-med-bg]="pedido.trackingCompra==='En camino a MED'"
+              [class.espera-despacho-bg]="pedido.trackingCompra==='Espera de despacho'"
+              [class.falta-comprar-bg]="pedido.estadoCompra==='Falta comprar'">
+              <td style="font-size: 10px !important;">{{ pedido.pedido.client.name}}</td>
+              <td>{{ pedido.pedido?.items[0].name}}</td>
+              <td>{{ pedido.pedido.date | date:"dd-MM-YYYY"}}</td>
+              <td>${{ pedido.pedido.total | number }}</td>
+
+              @if(pedido.compra && pedido.compra.compra ){
+              <td>{{ pedido?.compra?.compra.date | date:"dd-MM-YYYY"}}</td>
+              <td>${{ pedido?.compra?.compra.total | number}}</td>
+              <td>${{ pedido?.compra?.compra.balance | number}}</td>
+              <td>{{pedido.estadoCompra}}
+                <i *ngIf="pedido.estadoCompra === 'Comprado' " class="fa fa-check text-c-success"
+                  aria-hidden="true"></i>
+                <label for="inlineFormSelectPref" class="sr-only">Preference</label>
+                <div ngbDropdown class="d-inline-block">
+                  <span class="badge  estado" [ngClass]="this.obtenerColor(pedido.trackingCompra)" id="dropdownBasic1"
+                    ngbDropdownToggle
+                    *ngIf="pedido.estadoCompra && pedido.estadoCompra!=='Falta comprar'">{{pedido.trackingCompra
+                    && pedido.estadoCompra!=='Falta comprar' ? pedido.trackingCompra :'Sin definir'}}<i
+                      *ngIf="!pedido.trackingCompra" class="fa fa-exclamation-triangle text-c-red"
+                      aria-hidden="true"></i></span>
+                  <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button ngbDropdownItem (click)="cambiarEstadoCompra(opcion.name,pedido.id)"
+                      *ngFor="let opcion of estadosCompraPedidos">{{opcion.name}}
+                    </button>
+                  </div>
+                </div>
+
+              </td>
+              <td>
+                <b>
+                  <div ngbDropdown class="d-inline-block">
+                    <span class="badge bg-info estado" id="dropdownBasic1" ngbDropdownToggle>{{pedido.estadoVenta}}
+                    </span>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                      <button ngbDropdownItem (click)="cambiarEstadoVenta(opcion,pedido.id)"
+                        *ngFor="let opcion of estadosVenta">{{opcion}}
+                      </button>
+                    </div>
+                  </div>
+                </b>
+              </td>
+
+              }@else {
+              <td>No relacionado</td>
+              <td>No relacionado</td>
+              <td>No relacionado</td>
+              <td>No relacionado</td>
+              <td>No relacionado</td>
+              }
+              <td>
+
+                <input style="visibility: hidden;    width: 0px;padding: 0px; margin: 0px;height: 0px;" #input
+                  class="form-control" type="text" [(ngModel)]="pedido.fechaCompra"
+                  (ngModelChange)="cambiarFechaEntrega(pedido.fechaCompra, pedido.pedido.id)" ngbDatepicker
+                  #d="ngbDatepicker" />
+                <span *ngIf="pedido.trackingCompra!=='Entregado cliente'">{{pedido?.entregaCompraEstimada ?
+                  pedido?.entregaCompraEstimada : 'Falta definir'}}
+                  <i *ngIf="!pedido.entregaCompraEstimada" class="fa fa-exclamation-triangle text-c-red"
+                    aria-hidden="true"></i>
+                  <i (click)="d.toggle()" style="font-size: 15px;" class="fa fa-calendar" aria-hidden="true"></i>
+                </span>
+
+
+              </td>
+
+              <td><b *ngIf="pedido.trackingCompra!=='Entregado cliente'">{{pedido?.entregaVentaEstimada |
+                  date:"dd-MM-YYYY"}}</b></td>
+              <!--obtenerFechaEntregaEstimada(pedido.pedido.date)-->
+            </tr>
+
+            <!--  <td>
+                                    <div class="mt-1">
+                              <ngb-progressbar type="{{ progress.color }}" height="4px" [value]="progress.percentage"></ngb-progressbar>
+                            </div>
+                        </td>-->
+            }
+
+
+          </tbody>
+
+        </table>
+
+
+      </div>
+    </app-card>
+  </div>
+  <!-- [ light-button ] end -->
+  <!-- [ link-button ] start -->
+  <!--  <div class="col-sm-12">
+    <app-card cardTitle="Link" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-primary" role="button" href="javascript:">Primary link</a>
+        <a class="btn btn-primary disabled" tabindex="-1" role="button" aria-disabled="true" href="javascript:">Disabled
+          Primary link</a><
+        <a class="btn btn-link-success" role="button" href="javascript:">Light Success link</a>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-sm-12">
+    <app-card cardTitle="Outline" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-outline-primary" ngbTooltip="btn-outline-primary">Primary</button>
+        <button type="button" class="btn btn-outline-secondary" ngbTooltip="btn-outline-secondary">Secondary</button>
+        <button type="button" class="btn btn-outline-success" ngbTooltip="btn-outline-success">Success</button>
+        <button type="button" class="btn btn-outline-danger" ngbTooltip="btn-outline-danger">Danger</button>
+        <button type="button" class="btn btn-outline-warning" ngbTooltip="btn-outline-warning">Warning</button>
+        <button type="button" class="btn btn-outline-info" ngbTooltip="btn-outline-info">Info</button>
+        <button type="button" class="btn btn-outline-dark" ngbTooltip="btn-outline-dark">Dark</button>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-sm-12">
+    <app-card cardTitle="Disabled Button" [options]="false">
+      <p>
+        use
+        <code>.disabled</code>
+        in class
+        <code>.btn</code>
+        class to get Disabled button
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn disabled btn-primary">Primary</button>
+        <button type="button" class="btn disabled btn-secondary">Secondary</button>
+        <button type="button" class="btn disabled btn-success">Success</button>
+        <button type="button" class="btn disabled btn-danger">Danger</button>
+        <button type="button" class="btn disabled btn-warning text-dark">Warning</button>
+        <button type="button" class="btn disabled btn-info">Info</button>
+        <button type="button" class="btn disabled btn-light">Light</button>
+        <button type="button" class="btn disabled btn-dark">Dark</button>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-sm-12">
+    <app-card cardTitle="Shadow" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-shadow btn-primary">Primary</button>
+        <button type="button" class="btn btn-shadow btn-secondary">Secondary</button>
+        <button type="button" class="btn btn-shadow btn-success">Success</button>
+        <button type="button" class="btn btn-shadow btn-danger">Danger</button>
+        <button type="button" class="btn btn-shadow btn-warning text-dark">Warning</button>
+        <button type="button" class="btn btn-shadow btn-info">Info</button>
+        <button type="button" class="btn btn-shadow btn-light">Light</button>
+        <button type="button" class="btn btn-shadow btn-dark">Dark</button>
+        <button type="button" class="btn btn-shadow btn-link">Link</button>
+      </div>
+    </app-card>
+  </div>
+  
+  <div class="col-md-6">
+    <app-card cardTitle="Sizes [ Large ]" [options]="false">
+      <p>
+        use
+        <code>.btn-lg</code>
+        in class
+        <code>.btn</code>
+        class to get Large button
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-primary btn-lg">Large button</button>
+        <button type="button" class="btn btn-secondary btn-lg">Large button</button>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-md-6">
+    <app-card cardTitle="Sizes [ Small ]" [options]="false">
+      <p>
+        use
+        <code>.btn-sm</code>
+        in class
+        <code>.btn</code>
+        class to get Small button
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-primary btn-sm">Small button</button>
+        <button type="button" class="btn btn-secondary btn-sm">Small button</button>
+      </div>
+    </app-card>
+  </div>
+</div>
+<div class="row btn-page">
+  <div class="col-md-6">
+    <app-card cardTitle="Button With Icon" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-primary">
+          <i class="feather icon-thumbs-up me-1"></i>
+          Primary
+        </button>
+        <button type="button" class="btn btn-secondary">
+          <i class="feather icon-camera me-1"></i>
+          Secondary
+        </button>
+        <button type="button" class="btn btn-success">
+          <i class="feather icon-check-circle me-1"></i>
+          Success
+        </button>
+        <button type="button" class="btn btn-danger">
+          <i class="feather icon-slash me-1"></i>
+          Danger
+        </button>
+        <button type="button" class="btn btn-warning text-dark">
+          <i class="feather icon-alert-triangle me-1"></i>
+          Warning
+        </button>
+        <button type="button" class="btn btn-info">
+          <i class="feather icon-info me-1"></i>
+          Info
+        </button>
+      </div>
+    </app-card>
+  </div>
+  
+  <div class="col-md-6">
+    <app-card cardTitle="Outline Icon BUttons" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-outline-primary">
+          <i class="feather icon-thumbs-up me-1"></i>
+          Primary
+        </button>
+        <button type="button" class="btn btn-outline-secondary">
+          <i class="feather icon-camera me-1"></i>
+          Secondary
+        </button>
+        <button type="button" class="btn btn-outline-success">
+          <i class="feather icon-check-circle me-1"></i>
+          Success
+        </button>
+        <button type="button" class="btn btn-outline-danger">
+          <i class="feather icon-slash me-1"></i>
+          Danger
+        </button>
+        <button type="button" class="btn btn-outline-warning">
+          <i class="feather icon-alert-triangle me-1"></i>
+          Warning
+        </button>
+        <button type="button" class="btn btn-outline-info">
+          <i class="feather icon-info me-1"></i>
+          Info
+        </button>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-md-6">
+    <app-card cardTitle="Only Icon" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-icon btn-primary d-inline-flex">
+          <i class="feather icon-thumbs-up"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-secondary d-inline-flex">
+          <i class="feather icon-camera"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-success d-inline-flex">
+          <i class="feather icon-check-circle"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-danger d-inline-flex">
+          <i class="feather icon-slash"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-warning text-dark d-inline-flex">
+          <i class="feather icon-alert-triangle"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-info d-inline-flex">
+          <i class="feather icon-info"></i>
+        </button>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-md-6">
+    <app-card cardTitle="Outline Only" [options]="false">
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="btn btn-icon btn-outline-primary d-inline-flex">
+          <i class="feather icon-thumbs-up"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-outline-secondary d-inline-flex">
+          <i class="feather icon-camera"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-outline-success d-inline-flex">
+          <i class="feather icon-check-circle"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-outline-danger d-inline-flex">
+          <i class="feather icon-slash"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-outline-warning d-inline-flex">
+          <i class="feather icon-alert-triangle"></i>
+        </button>
+        <button type="button" class="btn btn-icon btn-outline-info d-inline-flex">
+          <i class="feather icon-info"></i>
+        </button>
+      </div>
+    </app-card>
+  </div>
+</div>
+<div class="row btn-page">
+  <div class="col-md-6">
+    <app-card cardTitle="basic Button Group" [options]="false">
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-primary">Left</button>
+        <button type="button" class="btn btn-primary">Middle</button>
+        <button type="button" class="btn btn-primary">Right</button>
+      </div>
+    </app-card>
+  </div>
+  
+  <div class="col-md-6">
+    <app-card cardTitle="Button Toolbar" [options]="false">
+      <div class="btn-toolbar d-flex flex-wrap gap-2" role="toolbar">
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-light">1</button>
+          <button type="button" class="btn btn-light">2</button>
+          <button type="button" class="btn btn-light">3</button>
+          <button type="button" class="btn btn-light">4</button>
+        </div>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-light">5</button>
+          <button type="button" class="btn btn-light">6</button>
+          <button type="button" class="btn btn-light">7</button>
+        </div>
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-light">8</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-md-12">
+    <app-card cardTitle="Button Toolbar Input" [options]="false">
+      <div class="row">
+        <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="btn-group me-2 mb-2" role="group" aria-label="First group">
+            <button type="button" class="btn btn-light-secondary">1</button>
+            <button type="button" class="btn btn-light-secondary">2</button>
+            <button type="button" class="btn btn-light-secondary">3</button>
+            <button type="button" class="btn btn-light-secondary">4</button>
+          </div>
+          <div class="input-group mb-2">
+            <div class="input-group-text" id="btnGroupAddon">&#64;</div>
+            <input type="text" class="form-control" placeholder="Input group example" aria-label="Input group example"
+              aria-describedby="btnGroupAddon" />
+          </div>
+        </div>
+
+        <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="btn-group mb-2" role="group" aria-label="First group">
+            <button type="button" class="btn btn-light-secondary">1</button>
+            <button type="button" class="btn btn-light-secondary">2</button>
+            <button type="button" class="btn btn-light-secondary">3</button>
+            <button type="button" class="btn btn-light-secondary">4</button>
+          </div>
+          <div class="input-group mb-2">
+            <div class="input-group-text" id="btnGroupAddon2">&#64;</div>
+            <input type="text" class="form-control" placeholder="Input group example" aria-label="Input group example"
+              aria-describedby="btnGroupAddon2" />
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-md-12">
+    <app-card cardTitle="Button Toolbar Size" [options]="false">
+      <div class="row">
+        <div class="col-xl-4 col-md-12 mb-2">
+          <p>
+            use
+            <code>.btn-group-lg</code>
+            in class
+            <code>.btn-group</code>
+            class to get large size button group
+          </p>
+          <div class="btn-group btn-group-lg" role="group" aria-label="button groups xl">
+            <button type="button" class="btn btn-secondary">Left</button>
+            <button type="button" class="btn btn-secondary">Middle</button>
+            <button type="button" class="btn btn-secondary">Right</button>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-2">
+          <p>this is default size</p>
+          <div class="btn-group" role="group" aria-label="button groups">
+            <button type="button" class="btn btn-secondary">Left</button>
+            <button type="button" class="btn btn-secondary">Middle</button>
+            <button type="button" class="btn btn-secondary">Right</button>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-2">
+          <p>
+            use
+            <code>.btn-group-sm</code>
+            in class
+            <code>.btn-group</code>
+            class to get small size button group
+          </p>
+          <div class="btn-group btn-group-sm" role="group" aria-label="button groups sm">
+            <button type="button" class="btn btn-secondary">Left</button>
+            <button type="button" class="btn btn-secondary">Middle</button>
+            <button type="button" class="btn btn-secondary">Right</button>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-md-6">
+    <app-card cardTitle="Nesting" [options]="false">
+      <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+        <button type="button" class="btn btn-primary">1</button>
+        <button type="button" class="btn btn-primary">2</button>
+        <div class="btn-group" role="group">
+          <div ngbDropdown>
+            <button type="button" class="btn btn-primary dropdown-toggle custom-border"
+              ngbDropdownToggle>Dropdown</button>
+            <div class="dropdown-menu" ngbDropdownMenu>
+              <a class="dropdown-item" href="javascript:">Dropdown link</a>
+              <a class="dropdown-item" href="javascript:">Dropdown link</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  
+  <div class="col-md-6">
+    <app-card cardTitle="Vertical Variation" [options]="false">
+      <div class="row">
+        <div class="col-4">
+          <div class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
+            <button type="button" class="btn m-0 btn-secondary">1</button>
+            <button type="button" class="btn m-0 btn-secondary">2</button>
+            <button type="button" class="btn m-0 btn-secondary">3</button>
+          </div>
+        </div>
+        <div class="col-8">
+          <div class="btn-group-vertical" role="group" aria-label="Button group with nested dropdown">
+            <button type="button" class="btn m-0 btn-secondary">1</button>
+            <button type="button" class="btn m-0 btn-secondary">2</button>
+            <div class="btn-group" role="group">
+              <div ngbDropdown>
+                <button type="button" class="btn m-0 btn-secondary vertical-custom dropdown-toggle"
+                  ngbDropdownToggle>Dropdown</button>
+                <div class="dropdown-menu" ngbDropdownMenu>
+                  <a class="dropdown-item" href="javascript:">Dropdown link</a>
+                  <a class="dropdown-item" href="javascript:">Dropdown link</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  
+  <div class="col-md-6">
+    <app-card cardTitle="Mixed style" [options]="false">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-danger">A</button>
+        <button type="button" class="btn btn-warning text-dark">A</button>
+        <button type="button" class="btn btn-primary">A</button>
+        <button type="button" class="btn btn-success">A</button>
+      </div>
+      <hr />
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-light-danger">A</button>
+        <button type="button" class="btn btn-light-warning text-dark">A</button>
+        <button type="button" class="btn btn-light-primary">A</button>
+        <button type="button" class="btn btn-light-success">A</button>
+      </div>
+    </app-card>
+  </div>
+  
+  <div class="col-md-6">
+    <app-card cardTitle="Outlined styles" [options]="false">
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-secondary">Left</button>
+        <button type="button" class="btn btn-outline-secondary">Middle</button>
+        <button type="button" class="btn btn-outline-secondary">Right</button>
+      </div>
+      <hr />
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-primary">Left</button>
+        <button type="button" class="btn btn-outline-success">Middle</button>
+        <button type="button" class="btn btn-outline-danger">Right</button>
+      </div>
+    </app-card>
+  </div>
+
+  <div class="col-md-6">
+    <app-card cardTitle="Checkbox button groups" [options]="false">
+      <div class="btn-group" role="group">
+        <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" />
+        <label class="btn btn-outline-secondary" for="btncheck1">Checkbox 1</label>
+        <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" />
+        <label class="btn btn-outline-secondary" for="btncheck2">Checkbox 2</label>
+        <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" />
+        <label class="btn btn-outline-secondary" for="btncheck3">Checkbox 3</label>
+      </div>
+      <hr />
+      <div class="btn-group" role="group">
+        <input type="checkbox" class="btn-check" id="btnchecklite1" autocomplete="off" />
+        <label class="btn btn-light-secondary" for="btnchecklite1">Checkbox 1</label>
+        <input type="checkbox" class="btn-check" id="btnchecklite2" autocomplete="off" />
+        <label class="btn btn-light-secondary" for="btnchecklite2">Checkbox 2</label>
+        <input type="checkbox" class="btn-check" id="btnchecklite3" autocomplete="off" />
+        <label class="btn btn-light-secondary" for="btnchecklite3">Checkbox 3</label>
+      </div>
+      <hr />
+      <div class="btn-group" role="group">
+        <input type="checkbox" class="btn-check" id="btnchecklitecol1" autocomplete="off" />
+        <label class="btn btn-light-primary" for="btnchecklitecol1">Checkbox 1</label>
+        <input type="checkbox" class="btn-check" id="btnchecklitecol2" autocomplete="off" />
+        <label class="btn btn-light-success" for="btnchecklitecol2">Checkbox 2</label>
+        <input type="checkbox" class="btn-check" id="btnchecklitecol3" autocomplete="off" />
+        <label class="btn btn-light-danger" for="btnchecklitecol3">Checkbox 3</label>
+      </div>
+    </app-card>
+  </div>
+ 
+  <div class="col-md-6">
+    <app-card cardTitle="Radio button groups" [options]="false">
+      <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" id="btnrdo1" autocomplete="off" name="btnradio1" />
+        <label class="btn btn-outline-secondary" for="btnrdo1">Radio 1</label>
+        <input type="radio" class="btn-check" id="btnrdo2" autocomplete="off" name="btnradio1" />
+        <label class="btn btn-outline-secondary" for="btnrdo2">Radio 2</label>
+        <input type="radio" class="btn-check" id="btnrdo3" autocomplete="off" name="btnradio1" />
+        <label class="btn btn-outline-secondary" for="btnrdo3">Radio 3</label>
+      </div>
+      <hr />
+      <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" id="btnrdolite1" autocomplete="off" name="btnradio2" />
+        <label class="btn btn-light-secondary" for="btnrdolite1">Radio 1</label>
+        <input type="radio" class="btn-check" id="btnrdolite2" autocomplete="off" name="btnradio2" />
+        <label class="btn btn-light-secondary" for="btnrdolite2">Radio 2</label>
+        <input type="radio" class="btn-check" id="btnrdolite3" autocomplete="off" name="btnradio2" />
+        <label class="btn btn-light-secondary" for="btnrdolite3">Radio 3</label>
+      </div>
+      <hr />
+      <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" id="btnrdolitecol1" autocomplete="off" name="btnradio3" />
+        <label class="btn btn-light-primary" for="btnrdolitecol1">Radio 1</label>
+        <input type="radio" class="btn-check" id="btnrdolitecol2" autocomplete="off" name="btnradio3" />
+        <label class="btn btn-light-success" for="btnrdolitecol2">Radio 2</label>
+        <input type="radio" class="btn-check" id="btnrdolitecol3" autocomplete="off" name="btnradio3" />
+        <label class="btn btn-light-danger" for="btnrdolitecol3">Radio 3</label>
+      </div>
+    </app-card>
+  </div>
+  <!-- [ radio button groups ] end -->
+</div>

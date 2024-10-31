@@ -1,0 +1,67 @@
+<ng-scrollbar style="height: 362px" visibility="hover" track="all">
+  <table class="table table-main table-hover m-b-0 mt-3" *ngIf="elementosCargados">
+    <thead>
+      <tr>
+        @for (sale of pedidosLbl; track sale) {
+        <th>
+          <span>
+            {{ sale.title }}
+
+          </span>
+        </th>
+        }
+      </tr>
+    </thead>
+    <tbody *ngIf="this.pedidos!.length>0">
+
+      @for (pedido of pedidos; track pedido) {
+      <tr>
+        <td>{{ pedido.pedido.date }}</td>
+        <td>{{ pedido.pedido?.items[0].name }}</td>
+        <td>${{ pedido.pedido.total | number}}</td>
+        <td>{{ pedido.cliente.name }}</td>
+        @if(pedido.compra){
+        <td>${{pedido?.compra?.compra?.total | number }}</td>
+        <td>{{ pedido?.compra?.compra?.date}}</td>
+        }@else{
+        <td>No relacionado</td>
+        <td>No relacionado</td>
+        }
+        <td><b>{{ obtenerFechaEntregaEstimada(pedido.pedido.date) | date:"dd-MM-YYYY"}}</b></td>
+        <td>${{ pedido.pedido.totalPaid | number}}</td>
+        <td>${{ pedido.pedido.balance | number}}</td>
+
+        <td>
+          {{pedido.estadoCompra}}
+          <i *ngIf="pedido.estadoCompra && pedido.estadoCompra!=='Falta comprar'" class="fa fa-check text-c-success"
+            aria-hidden="true"></i>
+          <label for="inlineFormSelectPref" class="sr-only">Preference</label>
+          <span [ngClass]="this.obtenerColor(pedido.trackingCompra)"  class="badge estado"
+            *ngIf="pedido.estadoCompra && pedido.estadoCompra!=='Falta comprar'">{{pedido.trackingCompra
+              && pedido.estadoCompra!=='Falta comprar' ? pedido.trackingCompra :'Sin definir'}}<i
+              *ngIf="!pedido.trackingCompra" class="fa fa-exclamation-triangle text-c-red"
+              aria-hidden="true"></i></span>
+        </td>
+
+
+        <td *ngIf="!pedido.compra">No relacionado</td>
+        <td *ngIf="pedido.compra"><b>{{pedido.estadoVenta}}</b></td>
+        <td *ngIf="!pedido.compra">No relacionado</td>
+
+      </tr>
+
+      <!--  <td>
+                    <div class="mt-1">
+              <ngb-progressbar type="{{ progress.color }}" height="4px" [value]="progress.percentage"></ngb-progressbar>
+            </div>
+        </td>-->
+      }
+
+
+    </tbody>
+
+  </table>
+  <div *ngIf="this.pedidos!.length <= 0">
+    <h4 class="text-center">No hay elementos que mostrar</h4>
+  </div>
+</ng-scrollbar>
