@@ -172,7 +172,7 @@ export class GraficaService {
       yaxis: {
         show: true,
         min: 100000,
-        max: 1000000,
+        max: 3000000,
         labels: {
           formatter: function (value: { toLocaleString: () => string; }) {
             return "$" + value.toLocaleString();

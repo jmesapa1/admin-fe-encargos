@@ -1,7 +1,8 @@
 // Angular Import
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbdSortableHeader } from './../../directives/sort-table.directive';
 
 // project import
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
@@ -15,7 +16,7 @@ import 'hammerjs';
 import 'mousetrap';
 
 // bootstrap import
-import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatepickerModule, NgbCollapseModule, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatepickerModule, NgbCollapseModule, NgbAccordionModule, NgbHighlight, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   imports: [
@@ -31,7 +32,12 @@ import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatep
     NgbDropdownModule,
     NgbCollapseModule,
     NgbAccordionModule,
-    NgbAccordionModule
+    NgbAccordionModule,
+    AsyncPipe, 
+    NgbHighlight, 
+    NgbPaginationModule,
+    DecimalPipe,
+    NgbdSortableHeader
 
   ],
   exports: [
@@ -52,7 +58,7 @@ import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatep
     NgbAccordionModule
     
   ],
-  providers:[NgbDropdownConfig,NgbDatepickerModule,NgbAccordionModule],
+  providers:[NgbDropdownConfig,NgbDatepickerModule,NgbAccordionModule,DecimalPipe],
   declarations: [DataFilterPipe, SpinnerComponent]
 })
 export class SharedModule {}

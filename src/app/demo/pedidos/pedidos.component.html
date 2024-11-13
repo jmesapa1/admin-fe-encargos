@@ -1,10 +1,12 @@
 <div class="row btn-page">
   <!-- [ default-button ] start -->
   <div class="col-sm-6" *ngIf="pedidosPendientes.length>0">
-    <app-card cardTitle="Pedidos pendientes de relacionar" [options]="false">
-      <table class="table table-main table-hover m-b-0">
+    <app-card cardTitle="Pedidos pendientes de relacionar" class="table-xs" [options]="false">
+      <table class="table table-main table-hover m-b-0" style=" width: 100%;
+  table-layout: fixed;">
         <thead>
           <tr>
+            
             @for (sale of pedidosLbl; track sale) {
             <th>
               <span>
@@ -21,7 +23,7 @@
           <tr>
             <td>{{ pedido.pedido.id }}</td>
             <td>{{ pedido.pedido.date }}</td>
-            <td>{{ pedido.pedido.items[0].name }}</td>
+            <td style="max-width: 100px !important">{{ pedido.pedido.items[0].name }}</td>
             <td>${{ pedido.pedido.total | number}}</td>
             <td>{{ pedido.cliente.name }}</td>
             <td>
@@ -138,7 +140,7 @@
           class="btn btn-icon btn-outline-danger d-inline-flex">
           <i class="feather icon-alert-triangle"></i> Falta comprar
         </button>
-        <button type="button" (click)="filtrar('Entregados')" class="btn btn-icon btn-outline-success d-inline-flex">
+        <button type="button" (click)="filtrar('Entregado cliente')" class="btn btn-icon btn-outline-success d-inline-flex">
           <i class="feather icon-alert-triangle"></i> Entregado
         </button>
         <button type="button" (click)="filtrar('En camino a MED')" class="btn btn-icon btn-outline-info d-inline-flex">
@@ -157,60 +159,125 @@
       <div>
         <div class="row">
 
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-4 col-xl-3">
 
           <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
             <h6 class="text-white text-center"><b>Total pedidos</b></h6>
-            <h4 class="m-b-0 text-center text-white">{{ pedidosContador | number}}</h4>
+            <h4 class="m-b-0 text-center text-white">{{ this.pedidos!.length | number}}</h4>
           </app-card>
         </div>
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-4 col-xl-3">
 
           <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
             <h6 class="text-white text-center"><b>Saldo</b></h6>
             <h4 class="m-b-0 text-center text-white">${{ pedidosSaldo | number}}</h4>
           </app-card>
           </div>
-          <div class="col-md-6 col-xl-3">
+          <div class="col-md-4 col-xl-3">
 
           <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
             <h6 class="text-white text-center"><b>Compras pendientes</b></h6>
             <h4 class="m-b-0 text-center text-white">${{ compraPendientesSaldo | number}}</h4>
           </app-card>
+          </div>
+          <div class="col-md-4 col-xl-3">
+          <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
+            <h6 class="text-white text-center"><b>Saldo p. entregados</b></h6>
+            <h4 class="m-b-0 text-center text-white">${{ saldoPedidosEntregados | number}}</h4>
+          </app-card>
         </div>
         </div>
       </div>
 
+      <div class="mb-3 row">
+        <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label">Nombre cliente:</label>
+        <div class="col-xs-3 col-sm-auto">
+          <input
+            id="table-complete-search"
+            type="text"
+            class="form-control"
+            name="searchTerm"
+            [(ngModel)]="tableService.searchTerm"
+          />
+        </div>
+        @if (tableService.loading$ | async) {
+          <span class="col col-form-label">Loading...</span>
+        }
+      </div>
       <div class="table-responsive">
-        <table class="table table-main table-hover m-b-0 mt-1">
+        <table class="table table-main table-striped table-hover m-b-0 mt-1">
           <thead>
+           
             <tr>
-              @for (sale of peidosCompraLbl; track sale) {
-              <th>
+              <th scope="col" sortable=id (sort)="onSort($event)">
                 <span>
-                  {{ sale.title }}
+                  Id
+
+                </span>
+              <th scope="col" sortable=clienteNombre (sort)="onSort($event)">
+                <span>
+                  Cliente
 
                 </span>
               </th>
-              }
+              <th scope="col" sortable=producto (sort)="onSort($event)">
+                <span>
+                  Producto
+
+                </span>
+              </th>
+              <th scope="col" sortable=fecha (sort)="onSort($event)">
+                <span>
+                  Fecha pedido
+
+                </span>
+              </th>
+              <th scope="col" sortable=valor (sort)="onSort($event)">
+                <span>
+                  Valor venta
+
+                </span>
+              </th>
+              
+              <th scope="col" sortable=saldoCompra (sort)="onSort($event)">
+                <span>
+                  Saldo venta
+
+                </span>
+              </th>
+
+              <th scope="col" sortable=saldoCompra (sort)="onSort($event)">
+                <span>
+                  Valor compra
+
+                </span>
+              </th>
+
+              <th scope="col" sortable=estadoCompra (sort)="onSort($event)">
+                <span>
+                  Estado compra
+
+                </span>
+              </th>  
             </tr>
           </thead>
           <tbody *ngIf="this.pedidos!.length>0">
 
-            @for (pedido of pedidos; track pedido.id) {
-            <tr [class.entregado]="pedido.estadoVenta==='Entregados'"
+            @for (pedido of pedidos$ | async; track pedido.id) {
+            <tr [class.entregado]="pedido.estadoCompra==='Entregado cliente' || pedido.trackingCompra==='Entregado cliente'"
               [class.camino-med-bg]="pedido.trackingCompra==='En camino a MED'"
               [class.espera-despacho-bg]="pedido.trackingCompra==='Espera de despacho'"
               [class.falta-comprar-bg]="pedido.estadoCompra==='Falta comprar'">
+              <td style="font-size: 10px !important;">{{ pedido.id}}</td>
+
               <td style="font-size: 10px !important;">{{ pedido.pedido.client.name}}</td>
               <td>{{ pedido.pedido?.items[0].name}}</td>
               <td>{{ pedido.pedido.date | date:"dd-MM-YYYY"}}</td>
               <td>${{ pedido.pedido.total | number }}</td>
+              <td>${{ pedido.saldo | number }}</td>
 
-              @if(pedido.compra && pedido.compra.compra ){
-              <td>{{ pedido?.compra?.compra.date | date:"dd-MM-YYYY"}}</td>
-              <td>${{ pedido?.compra?.compra.total | number}}</td>
-              <td>${{ pedido?.compra?.compra.balance | number}}</td>
+              @if(pedido.compraData){
+              <td>${{ pedido?.compraData.compra.balance | number}}</td>
               <td>{{pedido.estadoCompra}}
                 <i *ngIf="pedido.estadoCompra === 'Comprado' " class="fa fa-check text-c-success"
                   aria-hidden="true"></i>
@@ -230,19 +297,7 @@
                 </div>
 
               </td>
-              <td>
-                <b>
-                  <div ngbDropdown class="d-inline-block">
-                    <span class="badge bg-info estado" id="dropdownBasic1" ngbDropdownToggle>{{pedido.estadoVenta}}
-                    </span>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                      <button ngbDropdownItem (click)="cambiarEstadoVenta(opcion,pedido.id)"
-                        *ngFor="let opcion of estadosVenta">{{opcion}}
-                      </button>
-                    </div>
-                  </div>
-                </b>
-              </td>
+              
 
               }@else {
               <td>No relacionado</td>
@@ -251,24 +306,9 @@
               <td>No relacionado</td>
               <td>No relacionado</td>
               }
-              <td>
+              
 
-                <input style="visibility: hidden;    width: 0px;padding: 0px; margin: 0px;height: 0px;" #input
-                  class="form-control" type="text" [(ngModel)]="pedido.fechaCompra"
-                  (ngModelChange)="cambiarFechaEntrega(pedido.fechaCompra, pedido.pedido.id)" ngbDatepicker
-                  #d="ngbDatepicker" />
-                <span *ngIf="pedido.trackingCompra!=='Entregado cliente'">{{pedido?.entregaCompraEstimada ?
-                  pedido?.entregaCompraEstimada : 'Falta definir'}}
-                  <i *ngIf="!pedido.entregaCompraEstimada" class="fa fa-exclamation-triangle text-c-red"
-                    aria-hidden="true"></i>
-                  <i (click)="d.toggle()" style="font-size: 15px;" class="fa fa-calendar" aria-hidden="true"></i>
-                </span>
-
-
-              </td>
-
-              <td><b *ngIf="pedido.trackingCompra!=='Entregado cliente'">{{pedido?.entregaVentaEstimada |
-                  date:"dd-MM-YYYY"}}</b></td>
+              <td><b *ngIf="pedido.trackingCompra!=='Entregado cliente'"></b></td>
               <!--obtenerFechaEntregaEstimada(pedido.pedido.date)-->
             </tr>
 
@@ -283,7 +323,25 @@
           </tbody>
 
         </table>
-
+        <div class="d-flex justify-content-between p-2" *ngIf="tableService">
+          <ngb-pagination 
+            [collectionSize]="(total$ | async)!"
+            [(page)]="tableService!.page"
+            [pageSize]="tableService!.pageSize"
+          >
+          </ngb-pagination>
+      
+          <select
+            class="form-select"
+            style="width: auto"
+            name="pageSize"
+            [(ngModel)]="tableService!.pageSize"
+          >
+            <option [ngValue]="10">10 items per page</option>
+            <option [ngValue]="50">50 items per page</option>
+            <option [ngValue]="100">100 items per page</option>
+          </select>
+        </div>
 
       </div>
     </app-card>

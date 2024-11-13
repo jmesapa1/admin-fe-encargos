@@ -1,5 +1,5 @@
 // angular import
-import { Component, ViewChild, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnDestroy, inject } from '@angular/core';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
@@ -24,17 +24,13 @@ import {
   ApexMarkers
 } from 'ng-apexcharts';
 import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
-import { Observable } from 'rxjs';
-import { Factura } from 'src/app/types/factura';
-import { NgbDropdownConfig, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCalendar, NgbDate, NgbDateParserFormatter, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 import { ClientesService } from 'src/app/services/clientes/clientes.service';
 import { PagoService } from 'src/app/services/pago/pago.service';
-import { set } from 'lodash';
 import { GraficaService } from 'src/app/services/graficas/grafica.service';
 import { PedidoStorageService } from 'src/app/services/pedidos/pedido-storage.service';
 import { PagoStorageService } from 'src/app/services/pago/pago-storage.service';
 import { ComprasService } from 'src/app/services/compras/compras.service';
-import { Firestore, collection, connectFirestoreEmulator, getDocs, getFirestore, query } from '@angular/fire/firestore';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | ApexNonAxisChartSeries;
@@ -66,6 +62,16 @@ export default class DashAnalyticsComponent {
   // public props
   @ViewChild('chart') chart!: ChartComponent;
   @ViewChild('customerChart') customerChart!: ChartComponent;
+
+  calendar = inject(NgbCalendar);
+	formatter = inject(NgbDateParserFormatter);
+
+  hoy = new Date()
+	hoveredDate: NgbDate | null = null;
+	fromDate: NgbDate | null =   new NgbDate(this.hoy.getFullYear(),this.hoy.getMonth()+1,1)
+  toDate: NgbDate | null = this.calendar.getToday();
+
+  
   chartOptions!: Partial<ChartOptions>;
   chartOptions_1!: Partial<ChartOptions>;
   chartOptions_2!: Partial<ChartOptions>;
@@ -96,14 +102,16 @@ export default class DashAnalyticsComponent {
   graficaFlujo = false
   graficaSemanaSemana = false
 
+  pagosDetalle: any
   // constructor
   constructor(public pagoStorageService: PagoStorageService, public pedidoStorageService: PedidoStorageService, public pedidoService: PedidosService, public pagoService: PagoService, public db: AngularFireDatabase, public clienteService: ClientesService, private graficaService: GraficaService,
     private comprasService:ComprasService
   ) {
-    connectFirestoreEmulator(getFirestore(), '127.0.0.1', 8080);
+    //connectFirestoreEmulator(getFirestore(), '127.0.0.1', 8080);
     pedidoService.obtenerPedidos()
     comprasService.obtenerCompras()
     pagoService.obtenerPagos()
+
 
     pedidoStorageService.obtenerPedidos().subscribe(resp=>{
       this.pedidos=resp.data.filter((x: undefined)=>x!==undefined)
@@ -114,37 +122,30 @@ export default class DashAnalyticsComponent {
       console.log(this.pagos)
     })
 
-    pagoStorageService.obtenerPagos().subscribe(resp=>{
+   
+
+    const hoy = new Date()
+    const mes = hoy.getMonth()+1
+    const ano= hoy.getFullYear()
+
+
+    this.obtenerDetallesPago(ano+"-"+mes+"-01",ano+"-"+mes+"-"+hoy.getDate())
+    
+    pagoStorageService.obtenerPagos(ano+"-"+mes+"-01",ano+"-"+mes+"-"+hoy.getDate()).subscribe(resp=>{
       this.pagos=resp.data.filter((x: undefined)=>x!==undefined)
       this.crearGraficaBarrasComprasAbonos();
-      this.crearTarjetas()
     })
-
-    /*this.clienteService.obtenerClientes()
-    this.pagoService.obtenerPagos()*/
-
-
-    this.pagoStorageService.getPagos$().subscribe(pagos => {
-      this.pagos = pagos
-      this.pagos.splice(pagos.length - 1, 1)
-      console.log("pagos- ", this.pagos)
-      this.crearGraficaBarrasComprasAbonos();
-    })
-
-    /*this.pedidoStorageService.getPedidos$().subscribe(pedidos => {
-      this.pedidos = pedidos.filter((x:any)=>x.pedido && x.pedido.status!=="void")
-    })*/
-
-    db.list('clientes').valueChanges().subscribe(clientesArray => {
-      this.clientes = clientesArray
-    })
-
   }
 
+  obtenerDetallesPago(desde: string,hasta: string){
+    console.log(desde,hasta)
+    this.pagoStorageService.obtenerDetallesPago(desde,hasta).subscribe(resp=>{
+      this.pagosDetalle=resp.data
+      this.crearTarjetas()
+    })
+  }
 
   
-
-   
   crearGraficaBarrasComprasAbonos() {
     this.chartOptions = this.graficaService.crearGraficaBarrasComprasAbonos(this.pagos)
     this.abonosMes = this.pagos.reduce((a, b) => {
@@ -218,110 +219,108 @@ export default class DashAnalyticsComponent {
     });
   }
   crearTarjetas() {
-    const comprasPendientes = this.compras.filter(compra => {
-      if (compra.compra.balance > 0 || (compra.compra.balance === 0 && compra.compra.total === 0) && (compra.compra.termsConditions !== 'ENTREGA INMEDIATA' && !compra.pedido)) {
-        return compra
-      }
-    })
-    this.totalVentas = this.obtenerSumaPedidos(this.pedidos)
-    this.totalCompras = this.obtenerSumaCompras(this.compras, false)
-    this.totalComprasMes = this.obtenerSumaCompras(this.obtenerComprasPorMes(comprasPendientes), true)
-    this.totalVentasMes = this.obtenerSumaPedidos(this.obtenerPedidosPorMes())
-    this.totalCartera = this.obtenerCartera()
-    this.porcentajeCartera = (this.totalCartera / this.totalVentas) * 100
 
     this.cards = [
       {
         background: 'bg-c-blue',
         title: 'Total pedidos',
         icon: 'icon-shopping-cart',
-        text: 'Este Mes',
-        number: this.pedidos.length,
-        no: this.obtenerPedidosPorMes().length
+        text: '',
+        number: this.pagosDetalle.totalPedidos,
+        no: ""
       },
       {
         background: 'bg-c-green',
         title: 'Total ventas',
         icon: 'icon-tag',
-        text: 'Este Mes',
-        number: this.obtenerSumaPedidos(this.pedidos),
-        no: this.obtenerSumaPedidos(this.obtenerPedidosPorMes())
+        text: '',
+        number: this.pagosDetalle.totalVentas,
+        no: ""
       },
       {
         background: 'bg-c-yellow',
         title: 'Compras pendientes',
         icon: 'icon-repeat',
-        text: 'Este Mes',
-        number: comprasPendientes.length,
-        number2: this.obtenerSumaCompras(this.compras, true),
-        no: this.obtenerComprasPorMes(comprasPendientes).length,
-        no2: this.obtenerSumaCompras(this.obtenerComprasPorMes(comprasPendientes), true)
+        text: '',
+        number: this.pagosDetalle.cantidadComprasPendientes,
+        number2: this.pagosDetalle.totalComprasPendientes,
+        no: "",
+        //no2: ""
 
       },
       {
         background: 'bg-c-red',
         title: 'Total de compras',
         icon: 'icon-shopping-cart',
-        text: 'Este Mes',
-        number: this.obtenerSumaCompras(this.compras, false),
-        no: this.obtenerSumaCompras(this.obtenerComprasPorMes(this.compras), false)
+        text: '',
+        number: this.pagosDetalle.totalCompras,
+        no: ""
       },
       {
         background: 'bg-c-purple',
         title: 'Cartera',
         img: 'assets/icon/dollar-sign.svg',
-        text: 'Este mes',
+        text: '',
         widthImg: "30px",
-        number: this.totalCartera,
-        no: this.pedidoStorageService.obtenerPedidosPorMes(this.pedidos).reduce((a, b) => {
-          if (b.pedido) return a + b.pedido.balance
-        }, 0)
+        number: this.pagosDetalle.totalCartera,
+        no: ""
       },
+        {
+        background: 'bg-c-purple',
+        title: 'Pagos Transferencias',
+        img: 'assets/icon/dollar-sign.svg',
+        text: '',
+        widthImg: "30px",
+        number: this.pagosDetalle.totalPagosTransferencia,
+        no: ""
+      },
+      
       {
         background: 'bg-c-blue',
         title: 'Ventas ADDI',
         icon: 'icon-shopping-cart',
-        text: 'Sin pagar a hoy',
+        text: '',
         img: "assets/images/addi-logo.avif",
         widthImg: "50px",
-        number: this.obtenerPagosMesMedioPago("ADDI", false),
-        no: this.obtenerPagosMesMedioPago("ADDI", true)
+        number: this.pagosDetalle.totalPagosAddi,
+        no: ""
       },
       {
         background: 'bg-c-yellow',
         title: 'Ventas SISTECREDITO',
         icon: 'icon-repeat',
-        text: 'Sin pagar a hoy',
+        text: '',
         img: "assets/images/sistecredito-logo.png",
-        widthImg: "40px",
-        number: this.obtenerPagosMesMedioPago("SISTECREDITO", false),
-        no: this.obtenerPagosMesMedioPago("SISTECREDITO", true)
+        widthImg: "60px",
+        number: this.pagosDetalle.totalPagosSistecredito,
+       // no: 0
 
       },
       {
         background: 'bg-c-purple',
         title: 'En transito a Medellín (Saldo)',
         icon: 'icon-send',
-        text: 'AMAZON',
+        text: '',
         img: "assets/icon/truck.svg",
         widthImg: "30px",
-        number: this.obtenerPedidosEstado("En camino a MED", false).length,
-        number2: this.obtenerSaldoEstado("En camino a MED", false),
-        no: this.obtenerPedidosEstado("En camino a MED", "AMAZON").length,
-        no2: this.obtenerSaldoEstado("En camino a MED", "AMAZON")
+        number: this.pagosDetalle.cantidadPedidosEnTransito,
+        number2: this.pagosDetalle.valorSaldoPedidosEnTransito,
+        //no: 0,
+        //no2: 0
 
       },
       {
         background: 'bg-c-blue',
         title: 'Espera de despacho',
         icon: 'icon-calendar',
-        text: 'Saldo',
-        number: this.obtenerPedidosEstado("Espera de despacho", false).length,
-        number2: this.obtenerSumaPedidosEstado("Espera de despacho", false),
-        no: this.obtenerComprasSalgoEstado("Espera de despacho").length,
-        no2: this.obtenerSaldoEstado("Espera de despacho", false)
+        text: '',
+        number: this.pagosDetalle.cantidadEsperaDespacho,
+        number2: this.pagosDetalle.valorSaldoEsperaDespacho,
+       // no: 0,
+        //no2: 0
 
       },
+      
     ];
 
     this.crearGraficasDona()
@@ -426,6 +425,50 @@ export default class DashAnalyticsComponent {
   obtenerComprasSalgoEstado(estado: string | boolean) {
     return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado)
   }
+
+  onDateSelection(date: NgbDate) {
+		if (!this.fromDate && !this.toDate) {
+			this.fromDate = date;
+		} else if (this.fromDate && !this.toDate && date && date.after(this.fromDate)) {
+			this.toDate = date;
+
+      const diaDesde =  (this.fromDate.day < 10) ? '0' + this.fromDate.day.toString() : this.fromDate.day.toString();
+      const desde = this.fromDate.year+"-"+this.fromDate.month+"-" + diaDesde
+      
+      const diaHasta=(this.toDate.day < 10) ? '0' + this.toDate.day.toString() : this.toDate.day.toString();
+      const hasta = this.toDate.year+"-"+this.toDate.month+"-"+diaHasta
+
+      this.obtenerDetallesPago(desde,hasta)
+
+		} else {
+			this.toDate = null;
+			this.fromDate = date;
+		}
+	}
+
+	isHovered(date: NgbDate) {
+		return (
+			this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate)
+		);
+	}
+
+	isInside(date: NgbDate) {
+		return this.toDate && date.after(this.fromDate) && date.before(this.toDate);
+	}
+
+	isRange(date: NgbDate) {
+		return (
+			date.equals(this.fromDate) ||
+			(this.toDate && date.equals(this.toDate)) ||
+			this.isInside(date) ||
+			this.isHovered(date)
+		);
+	}
+
+	validateInput(currentValue: NgbDate | null, input: string): NgbDate | null {
+		const parsed = this.formatter.parse(input);
+		return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
+	}
 
 
 }

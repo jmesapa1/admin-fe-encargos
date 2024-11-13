@@ -411,4 +411,7 @@ export class ProductSaleComponent implements AfterViewInit {
      return "bg-c-red"
     }
   }
+
+  
+
 }

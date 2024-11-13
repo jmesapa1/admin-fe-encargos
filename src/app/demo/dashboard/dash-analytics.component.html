@@ -1,3 +1,76 @@
+  <div class="row mb-2" >
+    <form  style="margin: auto; max-width: 600px;">
+      <div class="row">
+
+        <div class="col-6">
+          <label for="fecha inicio" class="form-label">Fecha inicio</label>
+          <div class="dp-hidden position-absolute">
+            <div class="input-group">
+              <input
+                name="datepicker"
+                class="form-control"
+                ngbDatepicker
+                #datepicker="ngbDatepicker"
+                [autoClose]="'outside'"
+                (dateSelect)="onDateSelection($event)"
+                [displayMonths]="2"
+                [dayTemplate]="t"
+                outsideDays="hidden"
+                [startDate]="fromDate!"
+                tabindex="-1"
+              />
+              <ng-template #t let-date let-focused="focused">
+                <span
+                  class="custom-day"
+                  [class.focused]="focused"
+                  [class.range]="isRange(date)"
+                  [class.faded]="isHovered(date) || isInside(date)"
+                  (mouseenter)="hoveredDate = date"
+                  (mouseleave)="hoveredDate = null"
+                >
+                  {{ date.day }}
+                </span>
+              </ng-template>
+            </div>
+          </div>
+          <div class="input-group">
+            <input
+              #dpFromDate
+              class="form-control"
+              placeholder="yyyy-mm-dd"
+              name="dpFromDate"
+              [value]="formatter.format(fromDate)"
+              (input)="fromDate = validateInput(fromDate, dpFromDate.value)"
+            />
+            <button class="btn btn-primary bi bi-calendar3" (click)="datepicker.toggle()" type="button">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-6">
+          <label for="fecha fin" class="form-label">Fecha fin</label>
+          <div class="input-group">
+            
+            <input
+              #dpToDate
+              class="form-control"
+              placeholder="yyyy-mm-dd"
+              name="dpToDate"
+              [value]="formatter.format(toDate)"
+              (input)="toDate = validateInput(toDate, dpToDate.value)"
+              
+            />
+            <button class="btn btn-primary bi bi-calendar3" (click)="datepicker.toggle()" type="button">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    </form>
+  </div>
+ 
 <div class="row">
   <ng-container>
   <!-- order-card start -->
@@ -8,7 +81,7 @@
       <h2 class="text-end text-white">
         <i *ngIf="!card.img" class="feather {{ card.icon }}  float-start"></i>
         <img class="float-start" style="color:white;width: {{card.widthImg}}" *ngIf="card.img" src="{{card.img}}">
-        <span>{{ card.number | number }} <span *ngIf="card.number2" style="font-size: 20px !important;"> /
+        <span>{{ card.number | number }} <span *ngIf="card.number2>=0" style="font-size: 20px !important;"> /
             ${{card.number2 | number}}</span></span>
       </h2>
       <p class="m-b-0">

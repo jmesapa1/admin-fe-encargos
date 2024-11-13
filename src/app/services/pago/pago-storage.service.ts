@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Observable, Subject } from 'rxjs';
@@ -15,8 +15,13 @@ export class PagoStorageService {
   constructor(public db: AngularFireDatabase, private http: HttpClient) {
   }
 
-  obtenerPagos(): Observable<any> {
-    return this.http.get<any[]>(environment.apiUrl+"pagos-data")
+  obtenerPagos(desde: string,hasta: string): Observable<any> {
+    let params = new HttpParams();
+    if(desde && hasta){
+      params = params.append('fechainicio', desde);
+      params = params.append('fechafin', hasta);
+    }
+    return this.http.get<any[]>(environment.apiUrl+"pagos-data",{params:params})
   }
 
   agregarPagos() {
@@ -24,6 +29,16 @@ export class PagoStorageService {
       const pagos = pagosArray.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
       this.pagos$.next(pagos);
     })
+  }
+
+  obtenerDetallesPago(fechainicio: string, fechafin: string) {
+    let params = new HttpParams();
+    if(fechainicio && fechafin){
+      params = params.append('fechainicio', fechainicio);
+      params = params.append('fechafin', fechafin);
+    }
+    return this.http.get<any>(environment.apiUrl+"pagos-detalle",{params:params})
+
   }
   
   getPagos$(): Observable<any[]> {

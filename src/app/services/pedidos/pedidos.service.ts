@@ -34,14 +34,7 @@ export class PedidosService {
   }
 
   asignarCompra(idCompra:string,idFactura:string) {
-    this.http.post<Factura[]>(environment.apiUrl+"pedidos/asociar",{idCompra,idFactura}).subscribe({
-      next: (data) => {
-        console.log(data)
-      },
-      error: (error) => {
-        console.log(error)
-      },
-    });
+   return this.http.post<Factura[]>(environment.apiUrl+"pedidos/asociar",{idCompra,idFactura})
   }
   cambiarEstadoCompra(estado:string,idFactura:string){
     this.http.post<Factura[]>(environment.apiUrl+"pedidos/estado-compra",{trackingCompra:estado,idFactura}).subscribe({

@@ -1,21 +1,34 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // angular import
-import { Component, AfterViewInit } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, AfterViewInit, QueryList, ViewChildren, OnInit } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { NgbAccordionModule, NgbCollapseModule, NgbDropdownConfig, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionModule, NgbDropdownConfig, NgbDropdownModule, NgbHighlight, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { Observable } from 'rxjs';
+import { NgbdSortableHeader, SortEvent } from 'src/app/directives/sort-table.directive';
+import { FilterableTable } from 'src/app/directives/sort/filterable-table';
+import { ComprasService } from 'src/app/services/compras/compras.service';
+import { PedidoStorageService } from 'src/app/services/pedidos/pedido-storage.service';
 import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
 
+const compare = (v1: string | number, v2: string | number) => (v1 < v2 ? -1 : v1 > v2 ? 1 : 0);
+
 @Component({
   selector: 'app-pedidos',
   standalone: true,
-  imports: [SharedModule, NgbDropdownModule, NgbAccordionModule],
-  providers: [NgbDropdownConfig, NgbAccordionModule],
+  imports: [SharedModule, NgbDropdownModule, NgbAccordionModule,NgbdSortableHeader,DecimalPipe, NgbHighlight, NgbdSortableHeader, NgbPaginationModule],
+  providers: [NgbDropdownConfig, NgbAccordionModule,DecimalPipe, FilterableTable],
   templateUrl: './pedidos.component.html',
   styleUrls: ['./pedidos.component.scss']
 })
-export default class PedidosComponent implements AfterViewInit {
+export default class PedidosComponent  {
+  @ViewChildren(NgbdSortableHeader)
+  headers!: QueryList<NgbdSortableHeader>;
+  
+
   peidosCompraLbl = [{ title: 'Cliente' }, { title: 'Producto' }, { title: 'Fecha pedido' }, { title: 'V. venta' }, { title: 'Fecha compra' }, { title: 'v. compra' }, { title: 'Saldo compra' }, { title: 'Estado compra' }
     , { title: 'Estado venta' }, { title: 'F.E compra' }, { title: 'F.E venta' }
   ]
@@ -117,50 +130,80 @@ export default class PedidosComponent implements AfterViewInit {
   compraPendientes: any[] = []
   comprasEntregaInmediata: any[] = []
 
+  totalPedidosCaminoMed = 0
+
   pedidosContador = 0
   pedidosSaldo = 0
   compraPendientesSaldo=0
-  constructor(public pedidoService: PedidosService, public db: AngularFireDatabase) {
+  saldoPedidosEntregados=0
+
+
+  pedidos$!: Observable<any[]>;
+	total$!: Observable<number>;
+
+
+  constructor(public pedidoService: PedidosService,private comprasService:ComprasService, private pedidoStorageService:PedidoStorageService,public db: AngularFireDatabase, public tableService:FilterableTable) {
     pedidoService.obtenerPedidos()
-    db.list('pedidos').valueChanges().subscribe(pedidosArray => {
-      this.pedidos = pedidosArray.filter((x:any)=>x.pedido && x.pedido.status!=="void")
-      console.log("pedidos", this.pedidos)
-      this.pedidosPendientes = this.pedidos.filter(pedido => !pedido.compra).sort(
-        (a, b) => a - b
-      )
-      
-      this.obtenerCompras()
-    })
-    setTimeout(x=>{
+    this.obtenerCompras()
+    this.obtenerPedidos()
+
+
+    
+    setTimeout((x: any)=>{
       this.pedidosGeneral = this.pedidos
     },2000)
 
   }
 
-  ngAfterViewInit(){
-    setTimeout(x=>{
+  obtenerPedidos(){
+    this.pedidoStorageService.obtenerPedidos().subscribe(async resp=>{
+      this.pedidos=resp.data.filter((x: undefined)=>x!==undefined).sort(
+        (a: { fecha: any; }, b: { fecha: any; }) => new Date(a.fecha).getTime() > new Date(b.fecha).getTime() ? -1 : 0
+      )
+      this.pedidos= this.pedidos.map(x=>{ return {
+        ...x, 
+        clienteNombre: x.pedido.client.name,
+        producto: x.pedido?.items[0].name,
+        valorCompra:x.compraData ? x.compraData.valor : 0  ,
+        saldoCompra:x.compraData ? x.compraData.saldo : 0 
+
+      }})
+      this.pedidosGeneral=this.pedidos 
+      this.pedidosPendientes = this.pedidos.filter(pedido => !pedido.compra)
+      
+      this.tableService._displayedResults$.next(this.pedidos)
+      this.pedidos$ = this.tableService.displayedResults$
+      this.tableService.allValues=this.pedidos
       this.filtrar("General")
-    },2000)
+
+    })
   }
 
   obtenerCompras() {
     this.pedidoService.obtenerCompras()
-    this.db.list('compras').valueChanges().subscribe(comprasArray => {
-      this.compras = comprasArray
-      this.compras.splice(comprasArray.length - 1, 1)
-
-      const compras = this.compras.filter(compra => !compra.pedido).sort(
-        (a, b) => a - b
+    this.comprasService.obtenerComprasData().subscribe((resp: { data: any[]; })=>{
+      this.compras=resp.data.filter((x: undefined)=>x!==undefined).sort(
+        (a: { fecha: any; }, b: { fecha: any; }) => new Date(a.fecha).getTime() > new Date(b.fecha).getTime() ? -1 : 0
       )
-      this.compraPendientes = compras.filter(x => x.compra.termsConditions != "ENTREGA INMEDIATA")
-      this.comprasEntregaInmediata = compras.filter(x => x.compra.termsConditions === "ENTREGA INMEDIATA")
-      console.log("compras ENTREGAS INMEDIATAS", this.comprasEntregaInmediata)
-      this.obtenerDataCompra()
+      console.log("compras->",resp,this.compras)
+      this.compraPendientes= this.compras.filter(compra => !compra.pedido && compra.compra.termsConditions !== "ENTREGA INMEDIATA")
+      console.log("compras pendientes ->",this.compraPendientes)
     })
+    
+      this.obtenerDataCompra()
   }
 
   asignarCompra(optionCompra: any, pedidoId: string) {
-    this.pedidoService.asignarCompra(optionCompra.value, pedidoId)
+    this.pedidoService.asignarCompra(optionCompra.value, pedidoId).subscribe({
+      next: (data: any) => {
+        console.log(data)
+        this.obtenerCompras()
+        this.obtenerPedidos()
+      },
+      error: (error: any) => {
+        console.log(error)
+      },
+    });
 
   }
 
@@ -172,16 +215,18 @@ export default class PedidosComponent implements AfterViewInit {
   }
 
   obtenerCompraPedido(idPedido: any) {
-    return this.compras?.find(x => x.pedido === "facturas/" + idPedido)
+    return this.compras?.find((x: { pedido: string; }) => x.pedido === "facturas/" + idPedido)
   }
   obtenerDataCompra() {
-    this.pedidos = this.pedidos.map((pedido) => {
+    this.pedidos = this.pedidos.map((pedido: { id: any; }) => {
       return { ...pedido, compra: this.obtenerCompraPedido(pedido.id), }
     })
   }
 
   cambiarEstadoCompra(estado: string, idFactura: string) {
     this.pedidoService.cambiarEstadoCompra(estado, idFactura)
+    this.obtenerCompras()
+    this.obtenerPedidos()
   }
   cambiarEstadoVenta(estado: string, idFactura: string) {
     this.pedidoService.cambiarEstadoVenta(estado, idFactura)
@@ -192,7 +237,7 @@ export default class PedidosComponent implements AfterViewInit {
   }
 
   obtenerColor(tracking: string) {
-    const color = this.estadosCompraPedidos.find(x => x.name === tracking)?.color
+    const color = this.estadosCompraPedidos.find((x: { name: any; }) => x.name === tracking)?.color
     if (color) {
       return color
     } else {
@@ -204,18 +249,38 @@ export default class PedidosComponent implements AfterViewInit {
     if (estado === "General") {
       this.pedidos = this.pedidosGeneral
       this.pedidosContador = this.pedidosGeneral.length
-      this.pedidosSaldo = this.pedidos.reduce((a, b) => { if (b.pedido) return a + b.pedido.balance }, 0)
-      this.compraPendientesSaldo = this.compras.reduce((a, b) => {if (b.compra) {return a + b.compra.balance}}, 0)
+      this.pedidosSaldo = this.pedidos.reduce((a: any, b: { pedido: { balance: any; }; }) => { if (b.pedido) return a + b.pedido.balance }, 0)
+      this.compraPendientesSaldo = this.pedidos.reduce((a: any, b: { compraData: any }) => {if (b.compraData) {return a + b.compraData.compra.balance}}, 0)
+      
+      this.saldoPedidosEntregados=this.pedidos.filter((a: any) => a.trackingCompra === "Entregado cliente" && a.pedido.balance ).reduce((a: any, b: any) => { return a + b.pedido.balance}, 0)
 
-      } else {
-      this.pedidos = this.pedidosGeneral.filter(pedido => pedido.trackingCompra === estado || pedido.estadoCompra === estado || pedido.estadoVenta === estado)
-      this.pedidosSaldo = this.pedidos.reduce((a, b) => { if (b.pedido) return a + b.pedido.balance }, 0)
+      this.tableService._displayedResults$.next(this.pedidos)
+      this.pedidos$ = this.tableService.displayedResults$
+
+    } else {
+      this.pedidos = this.pedidosGeneral.filter((pedido :any ) => pedido.trackingCompra === estado || pedido.estadoCompra === estado)
+      console.log(this.pedidos)
+      this.pedidosSaldo = this.pedidos.reduce((a: any, b: { pedido: { balance: any; }; }) => { if (b.pedido) return a + b.pedido.balance }, 0)
       this.pedidosContador = this.pedidos.length
-      console.log(this.compras)
-      this.compraPendientesSaldo = this.compras.reduce((a, b) => {if (b.compra) {return a + b.compra.balance}}, 0)
-    }
+      this.compraPendientesSaldo = this.pedidos.reduce((a: any, b: { compraData: any }) => {if (b.compraData) {return a + b.compraData.compra.balance}}, 0)
+
+      this.saldoPedidosEntregados=this.pedidos.filter((a: any) => a.trackingCompra === "Entregado cliente" && a.pedido.balance ).reduce((a: any, b: any) => { return  a + b.pedido.balance }, 0)
+      this.tableService._displayedResults$.next(this.pedidos)
+      this.pedidos$ = this.tableService.displayedResults$
+
+      }
 
   }
 
+  onSort({ column, direction }: SortEvent) {
+    this.headers.forEach((header) => {
+			if (header.sortable !== column) {
+				header.direction = '';
+			}
+		});
+
+		this.tableService.sortColumn = column;
+		this.tableService.sortDirection = direction;
+	}
 
 }
