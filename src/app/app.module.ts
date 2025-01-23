@@ -23,7 +23,7 @@ import { NavCollapseComponent } from './theme/layout/admin/navigation/nav-conten
 import { NavGroupComponent } from './theme/layout/admin/navigation/nav-content/nav-group/nav-group.component';
 import { NavItemComponent } from './theme/layout/admin/navigation/nav-content/nav-item/nav-item.component';
 import { SharedModule } from './theme/shared/shared.module';
-import { provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
@@ -33,6 +33,19 @@ import { AngularFireModule } from "@angular/fire/compat";
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { NgxLoadingModule } from 'ngx-loading';
+import { NgxUiLoaderConfig, NgxUiLoaderModule, PB_DIRECTION, POSITION, SPINNER } from 'ngx-ui-loader';
+import { LoadingInterceptor } from './interceptors/loader-intercpetor.interceptor';
+
+const ngxUiLoaderConfig: NgxUiLoaderConfig = {
+  bgsColor: "red",
+  bgsPosition: POSITION.bottomCenter,
+  bgsSize: 200,
+  bgsType: SPINNER.rectangleBounce, // background spinner type
+  fgsType: SPINNER.chasingDots, // foreground spinner type
+  pbDirection: PB_DIRECTION.leftToRight, // progress bar direction
+  pbThickness: 5, // progress bar thickness
+};
 
 @NgModule({
   declarations: [
@@ -54,8 +67,16 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
     NavGroupComponent
   ],
   imports: [BrowserModule, AppRoutingModule, SharedModule, FormsModule, ReactiveFormsModule, BrowserAnimationsModule,AngularFireModule,AngularFireDatabaseModule, AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireDatabaseModule,],
-  providers: [provideHttpClient(), provideFirestore(() => getFirestore()),provideFirebaseApp(() => initializeApp(environment.firebaseConfig)), provideDatabase(() => getDatabase()),NgbDropdownConfig],
+    AngularFireDatabaseModule,     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
+    ,
+  ],
+  providers: [provideHttpClient(), provideFirestore(() => getFirestore()),provideFirebaseApp(() => initializeApp(environment.firebaseConfig)), provideDatabase(() => getDatabase()),NgbDropdownConfig,
+    provideHttpClient(
+      withInterceptorsFromDi(),
+    ),
+    {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},
+
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

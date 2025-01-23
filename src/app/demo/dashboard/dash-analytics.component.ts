@@ -125,7 +125,10 @@ export default class DashAnalyticsComponent {
    
 
     const hoy = new Date()
-    const mes = hoy.getMonth()+1
+    let mes :any = hoy.getMonth()+1
+    if(mes < 10){
+      mes ="0"+mes
+    }
     const ano= hoy.getFullYear()
 
 
@@ -433,10 +436,12 @@ export default class DashAnalyticsComponent {
 			this.toDate = date;
 
       const diaDesde =  (this.fromDate.day < 10) ? '0' + this.fromDate.day.toString() : this.fromDate.day.toString();
-      const desde = this.fromDate.year+"-"+this.fromDate.month+"-" + diaDesde
+      const mesDesde =  (this.fromDate.month < 10) ? '0' + this.fromDate.month.toString() : this.fromDate.month.toString();
+      const desde = this.fromDate.year+"-"+mesDesde+"-" + diaDesde
       
       const diaHasta=(this.toDate.day < 10) ? '0' + this.toDate.day.toString() : this.toDate.day.toString();
-      const hasta = this.toDate.year+"-"+this.toDate.month+"-"+diaHasta
+      const mesHasta =  (this.toDate.month < 10) ? '0' + this.toDate.month.toString() : this.toDate.month.toString();
+      const hasta = this.toDate.year+"-"+mesHasta+"-"+diaHasta
 
       this.obtenerDetallesPago(desde,hasta)
 
