@@ -36,6 +36,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { NgxLoadingModule } from 'ngx-loading';
 import { NgxUiLoaderConfig, NgxUiLoaderModule, PB_DIRECTION, POSITION, SPINNER } from 'ngx-ui-loader';
 import { LoadingInterceptor } from './interceptors/loader-intercpetor.interceptor';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 const ngxUiLoaderConfig: NgxUiLoaderConfig = {
   bgsColor: "red",
@@ -64,10 +65,10 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     NavContentComponent,
     NavItemComponent,
     NavCollapseComponent,
-    NavGroupComponent
+    NavGroupComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, SharedModule, FormsModule, ReactiveFormsModule, BrowserAnimationsModule,AngularFireModule,AngularFireDatabaseModule, AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireDatabaseModule,     NgxUiLoaderModule.forRoot(ngxUiLoaderConfig)
+    AngularFireDatabaseModule,  DecimalPipe,   NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),CommonModule
     ,
   ],
   providers: [provideHttpClient(), provideFirestore(() => getFirestore()),provideFirebaseApp(() => initializeApp(environment.firebaseConfig)), provideDatabase(() => getDatabase()),NgbDropdownConfig,
@@ -75,6 +76,7 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
       withInterceptorsFromDi(),
     ),
     {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},
+    DecimalPipe
 
   ],
   bootstrap: [AppComponent]

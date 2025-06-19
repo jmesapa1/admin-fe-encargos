@@ -264,14 +264,14 @@
           <tbody *ngIf="this.pedidos!.length>0">
 
             @for (pedido of pedidos$ | async; track pedido.id) {
-            <tr [class.entregado]="pedido.estadoCompra==='Entregado cliente' || pedido.trackingCompra==='Entregado cliente'"
+            <tr  [class.entregado]="pedido.estadoCompra==='Entregado cliente' || pedido.trackingCompra==='Entregado cliente'"
               [class.camino-med-bg]="pedido.trackingCompra==='En camino a MED'"
               [class.espera-despacho-bg]="pedido.trackingCompra==='Espera de despacho'"
               [class.falta-comprar-bg]="pedido.estadoCompra==='Falta comprar'">
-              <td style="font-size: 10px !important;">{{ pedido.id}}</td>
+              <td (click)="verDetallePedido(pedido)" style="font-size: 10px !important;">{{ pedido.id}}</td>
 
-              <td style="font-size: 10px !important;">{{ pedido.pedido.client.name}}</td>
-              <td>{{ pedido.pedido?.items[0].name}}</td>
+              <td (click)="verDetallePedido(pedido)" style="font-size: 10px !important;">{{ pedido.pedido.client.name}}</td>
+              <td (click)="verDetallePedido(pedido)" >{{ pedido.pedido?.items[0].name}}</td>
               <td>{{ pedido.pedido.date | date:"dd-MM-YYYY"}}</td>
               <td>${{ pedido.pedido.total | number }}</td>
               <td>${{ pedido.saldo | number }}</td>
@@ -310,6 +310,8 @@
 
               <td><b *ngIf="pedido.trackingCompra!=='Entregado cliente'"></b></td>
               <!--obtenerFechaEntregaEstimada(pedido.pedido.date)-->
+              <td><i class="icon feather icon-refresh-cw" style = "font-size: 20px;"(click)="refrescarPedido()" title="Notification"></i></td>
+
             </tr>
 
             <!--  <td>

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // angular import
 import { DecimalPipe } from '@angular/common';
-import { Component, AfterViewInit, QueryList, ViewChildren, OnInit } from '@angular/core';
+import { Component, AfterViewInit, QueryList, ViewChildren, OnInit, TemplateRef, inject } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { NgbAccordionModule, NgbDropdownConfig, NgbDropdownModule, NgbHighlight, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
@@ -13,6 +13,8 @@ import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
+import { NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { DetallePedidoComponent } from '../modal/detalle-pedido/detalle-pedido.component';
 
 const compare = (v1: string | number, v2: string | number) => (v1 < v2 ? -1 : v1 > v2 ? 1 : 0);
 
@@ -28,6 +30,7 @@ export default class PedidosComponent  {
   @ViewChildren(NgbdSortableHeader)
   headers!: QueryList<NgbdSortableHeader>;
   
+	private modalService = inject(NgbModal);
 
   peidosCompraLbl = [{ title: 'Cliente' }, { title: 'Producto' }, { title: 'Fecha pedido' }, { title: 'V. venta' }, { title: 'Fecha compra' }, { title: 'v. compra' }, { title: 'Saldo compra' }, { title: 'Estado compra' }
     , { title: 'Estado venta' }, { title: 'F.E compra' }, { title: 'F.E venta' }
@@ -140,6 +143,7 @@ export default class PedidosComponent  {
 
   pedidos$!: Observable<any[]>;
 	total$!: Observable<number>;
+  closeResult: any;
 
 
   constructor(public pedidoService: PedidosService,private comprasService:ComprasService, private pedidoStorageService:PedidoStorageService,public db: AngularFireDatabase, public tableService:FilterableTable) {
@@ -283,4 +287,15 @@ export default class PedidosComponent  {
 		this.tableService.sortDirection = direction;
 	}
 
+  refrescarPedido(){
+
+  }
+
+  verDetallePedido(pedido:any) {
+     const modal=  this.modalService.open(DetallePedidoComponent, { ariaLabelledBy: 'modal-basic-title' })
+      modal.componentInstance.pedido = pedido
+    }
+  getDismissReason(reason: any) {
+    throw new Error('Method not implemented.');
+  }
 }

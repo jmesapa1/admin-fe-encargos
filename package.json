@@ -37,6 +37,7 @@
     "los-encargos.de-salomon": "file:",
     "mousetrap": "^1.6.5",
     "ng-apexcharts": "^1.11.0",
+    "ng2-currency-mask": "^13.0.3",
     "ngx-color-picker": "^16.0.0",
     "ngx-loading": "^2.0.1",
     "ngx-scrollbar": "^15.0.1",

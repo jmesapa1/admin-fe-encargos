@@ -265,7 +265,7 @@
     symbol-observable "4.0.0"
     yargs "17.7.2"
 
-"@angular/common@^18.0.0", "@angular/common@^18.0.0 || ^19.0.0", "@angular/common@^18.0.1", "@angular/common@^18.0.5", "@angular/common@>=13.0.0", "@angular/common@>=17.1.0", "@angular/common@>=4.0.0", "@angular/common@>=9.0.0", "@angular/common@18.2.2":
+"@angular/common@^18.0.0", "@angular/common@^18.0.0 || ^19.0.0", "@angular/common@^18.0.1", "@angular/common@^18.0.5", "@angular/common@>= 12.x.x", "@angular/common@>=13.0.0", "@angular/common@>=17.1.0", "@angular/common@>=4.0.0", "@angular/common@>=9.0.0", "@angular/common@18.2.2":
   version "18.2.2"
   dependencies:
     tslib "^2.3.0"
@@ -287,7 +287,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^18.0.0", "@angular/core@^18.0.0 || ^19.0.0", "@angular/core@^18.0.1", "@angular/core@^18.0.5", "@angular/core@>=13.0.0", "@angular/core@>=17.1.0", "@angular/core@>=4.0.0", "@angular/core@>=9.0.0", "@angular/core@18.2.2":
+"@angular/core@^18.0.0", "@angular/core@^18.0.0 || ^19.0.0", "@angular/core@^18.0.1", "@angular/core@^18.0.5", "@angular/core@>= 12.x.x", "@angular/core@>=13.0.0", "@angular/core@>=17.1.0", "@angular/core@>=4.0.0", "@angular/core@>=9.0.0", "@angular/core@18.2.2":
   version "18.2.2"
   dependencies:
     tslib "^2.3.0"
@@ -5537,6 +5537,7 @@ long@^5.0.0:
     ngx-color-picker "^16.0.0"
     ngx-loading "^2.0.1"
     ngx-scrollbar "^15.0.1"
+    ngx-ui-loader "^13.0.0"
     rxjs "~7.8.1"
     tslib "^2.6.3"
     zone.js "~0.14.7"
@@ -5898,6 +5899,13 @@ ng-apexcharts@^1.11.0:
   integrity sha512-bzZ2qMYpJJ1V/Yfp9eC5y7BuxrlZx4fc9ev9pNHW8qEs5B0yE5yW25WrLhoGTYsfeFZfiADWeAmZkceEiihpFw==
   dependencies:
     tslib "^2.0.0"
+
+ng2-currency-mask@^13.0.3:
+  version "13.0.3"
+  resolved "https://registry.npmjs.org/ng2-currency-mask/-/ng2-currency-mask-13.0.3.tgz"
+  integrity sha512-ZTaY7sO2vFTfGtjfdu7SrHIeaRzb3oDSVHKvtcb9sYiF4ez8vzRPNjnzcmsk71RjMWl24XMFtmBDPyx/NxXsFg==
+  dependencies:
+    tslib ">= 2.3.0"
 
 ngx-color-picker@^16.0.0:
   version "16.0.0"
@@ -7710,7 +7718,7 @@ tslib@^1.9.0:
   resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2, tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.6.3, tslib@2:
+tslib@^2, tslib@^2.0.0, tslib@^2.1.0, tslib@^2.3.0, tslib@^2.4.0, tslib@^2.6.3, "tslib@>= 2.3.0", tslib@2:
   version "2.7.0"
 
 tslib@2.6.3:
