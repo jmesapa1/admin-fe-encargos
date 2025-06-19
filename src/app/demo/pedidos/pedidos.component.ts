@@ -27,7 +27,7 @@ const compare = (v1: string | number, v2: string | number) => (v1 < v2 ? -1 : v1
 export default class PedidosComponent  {
   @ViewChildren(NgbdSortableHeader)
   headers!: QueryList<NgbdSortableHeader>;
-  
+
 
   peidosCompraLbl = [{ title: 'Cliente' }, { title: 'Producto' }, { title: 'Fecha pedido' }, { title: 'V. venta' }, { title: 'Fecha compra' }, { title: 'v. compra' }, { title: 'Saldo compra' }, { title: 'Estado compra' }
     , { title: 'Estado venta' }, { title: 'F.E compra' }, { title: 'F.E venta' }
@@ -148,7 +148,7 @@ export default class PedidosComponent  {
     this.obtenerPedidos()
 
 
-    
+
     setTimeout((x: any)=>{
       this.pedidosGeneral = this.pedidos
     },2000)
@@ -161,16 +161,16 @@ export default class PedidosComponent  {
         (a: { fecha: any; }, b: { fecha: any; }) => new Date(a.fecha).getTime() > new Date(b.fecha).getTime() ? -1 : 0
       )
       this.pedidos= this.pedidos.map(x=>{ return {
-        ...x, 
+        ...x,
         clienteNombre: x.pedido.client.name,
         producto: x.pedido?.items[0].name,
         valorCompra:x.compraData ? x.compraData.valor : 0  ,
-        saldoCompra:x.compraData ? x.compraData.saldo : 0 
+        saldoCompra:x.compraData ? x.compraData.saldo : 0
 
       }})
-      this.pedidosGeneral=this.pedidos 
+      this.pedidosGeneral=this.pedidos
       this.pedidosPendientes = this.pedidos.filter(pedido => !pedido.compra)
-      
+
       this.tableService._displayedResults$.next(this.pedidos)
       this.pedidos$ = this.tableService.displayedResults$
       this.tableService.allValues=this.pedidos
@@ -189,7 +189,7 @@ export default class PedidosComponent  {
       this.compraPendientes= this.compras.filter(compra => !compra.pedido && compra.compra.termsConditions !== "ENTREGA INMEDIATA")
       console.log("compras pendientes ->",this.compraPendientes)
     })
-    
+
       this.obtenerDataCompra()
   }
 
@@ -251,7 +251,7 @@ export default class PedidosComponent  {
       this.pedidosContador = this.pedidosGeneral.length
       this.pedidosSaldo = this.pedidos.reduce((a: any, b: { pedido: { balance: any; }; }) => { if (b.pedido) return a + b.pedido.balance }, 0)
       this.compraPendientesSaldo = this.pedidos.reduce((a: any, b: { compraData: any }) => {if (b.compraData) {return a + b.compraData.compra.balance}}, 0)
-      
+
       this.saldoPedidosEntregados=this.pedidos.filter((a: any) => a.trackingCompra === "Entregado cliente" && a.pedido.balance ).reduce((a: any, b: any) => { return a + b.pedido.balance}, 0)
 
       this.tableService._displayedResults$.next(this.pedidos)
@@ -282,5 +282,18 @@ export default class PedidosComponent  {
 		this.tableService.sortColumn = column;
 		this.tableService.sortDirection = direction;
 	}
+
+  pagarSaldoFacturaCompra(pedido: { id: any; compraData: { id: any, saldo:any }; }){
+    let data = {idPedido: pedido.id, idCompra: pedido.compraData.id, saldo: pedido.compraData?.saldo}
+    this.pedidoService.pagarSaldoFacturaCompra(data).subscribe({
+      next: (data: any) => {
+        console.log(data)
+
+      },
+      error: (error: any) => {
+        console.log(error)
+      },
+    });
+  }
 
 }

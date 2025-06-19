@@ -6,7 +6,7 @@
   table-layout: fixed;">
         <thead>
           <tr>
-            
+
             @for (sale of pedidosLbl; track sale) {
             <th>
               <span>
@@ -170,13 +170,13 @@
 
           <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
             <h6 class="text-white text-center"><b>Saldo</b></h6>
-            <h4 class="m-b-0 text-center text-white">${{ pedidosSaldo | number}}</h4>
+            <h4 class="m-b-0 text-center text-white"><b>${{ pedidosSaldo | number}}</b></h4>
           </app-card>
           </div>
           <div class="col-md-4 col-xl-3">
 
           <app-card [hidHeader]="true" cardClass="order-card bg-c-blue">
-            <h6 class="text-white text-center"><b>Compras pendientes</b></h6>
+            <h6 class="text-white text-center"><b>Compras pendientes </b></h6>
             <h4 class="m-b-0 text-center text-white">${{ compraPendientesSaldo | number}}</h4>
           </app-card>
           </div>
@@ -207,7 +207,7 @@
       <div class="table-responsive">
         <table class="table table-main table-striped table-hover m-b-0 mt-1">
           <thead>
-           
+
             <tr>
               <th scope="col" sortable=id (sort)="onSort($event)">
                 <span>
@@ -238,7 +238,7 @@
 
                 </span>
               </th>
-              
+
               <th scope="col" sortable=saldoCompra (sort)="onSort($event)">
                 <span>
                   Saldo venta
@@ -258,7 +258,12 @@
                   Estado compra
 
                 </span>
-              </th>  
+              </th>
+              <th scope="col" sortable=estadoCompra (sort)="onSort($event)">
+                <span>
+                  Acciones
+                </span>
+              </th>
             </tr>
           </thead>
           <tbody *ngIf="this.pedidos!.length>0">
@@ -274,13 +279,14 @@
               <td>{{ pedido.pedido?.items[0].name}}</td>
               <td>{{ pedido.pedido.date | date:"dd-MM-YYYY"}}</td>
               <td>${{ pedido.pedido.total | number }}</td>
-              <td>${{ pedido.saldo | number }}</td>
+              <td><b>${{ pedido.saldo | number }}</b></td>
 
               @if(pedido.compraData){
               <td>${{ pedido?.compraData.compra.balance | number}}</td>
               <td>{{pedido.estadoCompra}}
                 <i *ngIf="pedido.estadoCompra === 'Comprado' " class="fa fa-check text-c-success"
                   aria-hidden="true"></i>
+                <br>
                 <label for="inlineFormSelectPref" class="sr-only">Preference</label>
                 <div ngbDropdown class="d-inline-block">
                   <span class="badge  estado" [ngClass]="this.obtenerColor(pedido.trackingCompra)" id="dropdownBasic1"
@@ -297,16 +303,23 @@
                 </div>
 
               </td>
-              
+              <td>
+                <div class="row">
+                    <button type="button"  *ngIf="pedido.estadoCompra==='Falta comprar'" class="btn btn-primary" (click)="pagarSaldoFacturaCompra(pedido)">Comprar</button>
+              <button type="button"  *ngIf="pedido.saldo!==0" class="btn btn-secondary" (click)="pagarSaldoFacturaCompra(pedido)">Pagar</button>
+
+                </div>
+
+            </td>
+
 
               }@else {
               <td>No relacionado</td>
               <td>No relacionado</td>
               <td>No relacionado</td>
               <td>No relacionado</td>
-              <td>No relacionado</td>
               }
-              
+
 
               <td><b *ngIf="pedido.trackingCompra!=='Entregado cliente'"></b></td>
               <!--obtenerFechaEntregaEstimada(pedido.pedido.date)-->
@@ -324,13 +337,13 @@
 
         </table>
         <div class="d-flex justify-content-between p-2" *ngIf="tableService">
-          <ngb-pagination 
+          <ngb-pagination
             [collectionSize]="(total$ | async)!"
             [(page)]="tableService!.page"
             [pageSize]="tableService!.pageSize"
           >
           </ngb-pagination>
-      
+
           <select
             class="form-select"
             style="width: auto"
@@ -358,7 +371,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-sm-12">
     <app-card cardTitle="Outline" [options]="false">
       <div class="d-flex flex-wrap gap-2">
@@ -372,7 +385,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-sm-12">
     <app-card cardTitle="Disabled Button" [options]="false">
       <p>
@@ -394,7 +407,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-sm-12">
     <app-card cardTitle="Shadow" [options]="false">
       <div class="d-flex flex-wrap gap-2">
@@ -410,7 +423,7 @@
       </div>
     </app-card>
   </div>
-  
+
   <div class="col-md-6">
     <app-card cardTitle="Sizes [ Large ]" [options]="false">
       <p>
@@ -474,7 +487,7 @@
       </div>
     </app-card>
   </div>
-  
+
   <div class="col-md-6">
     <app-card cardTitle="Outline Icon BUttons" [options]="false">
       <div class="d-flex flex-wrap gap-2">
@@ -505,7 +518,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-md-6">
     <app-card cardTitle="Only Icon" [options]="false">
       <div class="d-flex flex-wrap gap-2">
@@ -566,7 +579,7 @@
       </div>
     </app-card>
   </div>
-  
+
   <div class="col-md-6">
     <app-card cardTitle="Button Toolbar" [options]="false">
       <div class="btn-toolbar d-flex flex-wrap gap-2" role="toolbar">
@@ -587,7 +600,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-md-12">
     <app-card cardTitle="Button Toolbar Input" [options]="false">
       <div class="row">
@@ -621,7 +634,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-md-12">
     <app-card cardTitle="Button Toolbar Size" [options]="false">
       <div class="row">
@@ -664,7 +677,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-md-6">
     <app-card cardTitle="Nesting" [options]="false">
       <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
@@ -683,7 +696,7 @@
       </div>
     </app-card>
   </div>
-  
+
   <div class="col-md-6">
     <app-card cardTitle="Vertical Variation" [options]="false">
       <div class="row">
@@ -713,7 +726,7 @@
       </div>
     </app-card>
   </div>
-  
+
   <div class="col-md-6">
     <app-card cardTitle="Mixed style" [options]="false">
       <div class="btn-group" role="group">
@@ -731,7 +744,7 @@
       </div>
     </app-card>
   </div>
-  
+
   <div class="col-md-6">
     <app-card cardTitle="Outlined styles" [options]="false">
       <div class="btn-group" role="group">
@@ -778,7 +791,7 @@
       </div>
     </app-card>
   </div>
- 
+
   <div class="col-md-6">
     <app-card cardTitle="Radio button groups" [options]="false">
       <div class="btn-group" role="group">

@@ -67,4 +67,8 @@ export class PedidosService {
       },
     });
   }
+
+  pagarSaldoFacturaCompra(data: any){
+    return this.http.post<Factura[]>(environment.apiUrl+"compras/pagar/factura",{...data})
+  }
 }
