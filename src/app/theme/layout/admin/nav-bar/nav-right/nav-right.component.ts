@@ -4,6 +4,9 @@ import { animate, style, transition, trigger } from '@angular/animations';
 
 // bootstrap
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import { ComprasService } from 'src/app/services/compras/compras.service';
+import { PagoService } from 'src/app/services/pago/pago.service';
+import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
 
 @Component({
   selector: 'app-nav-right',
@@ -28,7 +31,7 @@ export class NavRightComponent {
   friendId!: number;
 
   // constructor
-  constructor() {
+  constructor(public pedidoService: PedidosService, public pagoService: PagoService, public comprasService:ComprasService) {
     this.visibleUserList = false;
     this.chatMessage = false;
   }
@@ -37,5 +40,12 @@ export class NavRightComponent {
   onChatToggle(friendID: number) {
     this.friendId = friendID;
     this.chatMessage = !this.chatMessage;
+  }
+
+  refrescarInfo(){
+    this.pedidoService.obtenerPedidos()
+    this.comprasService.obtenerCompras()
+    this.pagoService.obtenerPagos()
+
   }
 }

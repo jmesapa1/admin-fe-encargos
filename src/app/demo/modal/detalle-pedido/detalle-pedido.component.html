@@ -1,0 +1,54 @@
+<div class="modal-header">
+    <h4 class="modal-title">Pedido número {{pedido.id}}</h4>
+    <button type="button" class="btn-close" aria-label="Close"  (click)="activeModal.close('Close click')"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col">
+            <h3>
+                Cliente
+            </h3>
+            <p>{{pedido.cliente.name}}</p>
+            <h3>
+                Whatsapp
+            </h3>
+            <p>{{pedido.cliente.mobile}}</p>
+        </div>
+        <div class="col">
+            <h3>
+                Saldo 
+            </h3>
+            <p>${{pedido.pedido.balance | number}}</p>
+        </div>
+    </div>
+
+    <hr>
+    <div class="row">
+        <div class="col">
+            <h3>
+                Producto
+            </h3>
+            <p>{{pedido.pedido.items[0].name}}</p>
+        </div>
+        <div class="col">
+            <h3>
+                Imagen
+            </h3>
+            @if(infoProducto && infoProducto.images && infoProducto.images.length>0){
+                <p><img style="max-width: 200px;" src="{{infoProducto?.images[0]?.url}}"> </p>
+            }@else {
+                <p>No existe foto</p>
+            }
+        </div>
+    </div>
+    
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Desvincular pedido/compra</button>
+
+
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Abonar a saldo</button>
+
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+</div>

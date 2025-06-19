@@ -24,13 +24,23 @@ import {
   ApexMarkers
 } from 'ng-apexcharts';
 import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
-import { NgbCalendar, NgbDate, NgbDateParserFormatter, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbCalendar,
+  NgbDate,
+  NgbDateParserFormatter,
+  NgbDropdownConfig,
+  NgbModal,
+  NgbTooltipModule
+} from '@ng-bootstrap/ng-bootstrap';
 import { ClientesService } from 'src/app/services/clientes/clientes.service';
 import { PagoService } from 'src/app/services/pago/pago.service';
 import { GraficaService } from 'src/app/services/graficas/grafica.service';
 import { PedidoStorageService } from 'src/app/services/pedidos/pedido-storage.service';
 import { PagoStorageService } from 'src/app/services/pago/pago-storage.service';
 import { ComprasService } from 'src/app/services/compras/compras.service';
+import { DetallePedidoComponent } from '../modal/detalle-pedido/detalle-pedido.component';
+import { AgregarGastoComponent } from '../modal/agregar-gasto/agregar-gasto.component';
+import { GastosService } from '../../services/gastos/gastos.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | ApexNonAxisChartSeries;
@@ -53,7 +63,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-dash-analytics',
   standalone: true,
-  imports: [SharedModule, NgApexchartsModule, ProductSaleComponent],
+  imports: [SharedModule, NgApexchartsModule, NgbTooltipModule],
   providers: [NgbDropdownConfig],
   templateUrl: './dash-analytics.component.html',
   styleUrls: ['./dash-analytics.component.scss']
@@ -65,64 +75,51 @@ export default class DashAnalyticsComponent {
 
   calendar = inject(NgbCalendar);
 	formatter = inject(NgbDateParserFormatter);
+  private modalService = inject(NgbModal);
+
 
   hoy = new Date()
 	hoveredDate: NgbDate | null = null;
 	fromDate: NgbDate | null =   new NgbDate(this.hoy.getFullYear(),this.hoy.getMonth()+1,1)
   toDate: NgbDate | null = this.calendar.getToday();
+  desde:string=""
+  hasta:string=""
 
-  
-  chartOptions!: Partial<ChartOptions>;
-  chartOptions_1!: Partial<ChartOptions>;
-  chartOptions_2!: Partial<ChartOptions>;
-  chartOptions_3!: Partial<ChartOptions>;
 
   pedidos: any[] = []
   compras: any[] = []
   pagos: any[] = []
+  pagosDomicilio = 0
 
   cards: any[] = []
   totalVentas = 0;
   totalCompras = 0;
-  totalVentasMes = 0
-  abonosMes = 0
 
-  totalComprasMes = 0
   totalCartera = 0
-
-  disponibleSisteCredito = 0
-  disponibleAddi = 0
-
-  porcentajeCartera = 0
-  graficas = false
   clientes: any = []
-  fechasArray: any[] = []
-  dataIngreso: any[] = []
-  dataEgreso: any[] = []
-  graficaFlujo = false
-  graficaSemanaSemana = false
+  gastos:any = []
 
   pagosDetalle: any
+
+  totalGastos = 0
+  totalPagoGastos=0
   // constructor
   constructor(public pagoStorageService: PagoStorageService, public pedidoStorageService: PedidoStorageService, public pedidoService: PedidosService, public pagoService: PagoService, public db: AngularFireDatabase, public clienteService: ClientesService, private graficaService: GraficaService,
-    private comprasService:ComprasService
+    private comprasService:ComprasService, private gastosService:GastosService
   ) {
     //connectFirestoreEmulator(getFirestore(), '127.0.0.1', 8080);
     pedidoService.obtenerPedidos()
     comprasService.obtenerCompras()
     pagoService.obtenerPagos()
 
-
     pedidoStorageService.obtenerPedidos().subscribe(resp=>{
       this.pedidos=resp.data.filter((x: undefined)=>x!==undefined)
     })
-    
+
     comprasService.obtenerComprasData().subscribe(resp=>{
       this.compras=resp.data.filter((x: undefined)=>x!==undefined)
       console.log(this.pagos)
     })
-
-   
 
     const hoy = new Date()
     let mes :any = hoy.getMonth()+1
@@ -131,13 +128,11 @@ export default class DashAnalyticsComponent {
     }
     const ano= hoy.getFullYear()
 
+    this.desde= ano+"-"+mes+"-01"
+    this.hasta = ano+"-"+mes+"-"+hoy.getDate()
 
-    this.obtenerDetallesPago(ano+"-"+mes+"-01",ano+"-"+mes+"-"+hoy.getDate())
-    
-    pagoStorageService.obtenerPagos(ano+"-"+mes+"-01",ano+"-"+mes+"-"+hoy.getDate()).subscribe(resp=>{
-      this.pagos=resp.data.filter((x: undefined)=>x!==undefined)
-      this.crearGraficaBarrasComprasAbonos();
-    })
+    this.obtenerDetallesPago(this.desde,this.hasta)
+    this.obtenerGastos()
   }
 
   obtenerDetallesPago(desde: string,hasta: string){
@@ -145,82 +140,22 @@ export default class DashAnalyticsComponent {
     this.pagoStorageService.obtenerDetallesPago(desde,hasta).subscribe(resp=>{
       this.pagosDetalle=resp.data
       this.crearTarjetas()
+
+    })
+
+    this.pagoStorageService.obtenerPagos(desde,hasta).subscribe(resp=>{
+      this.pagos = resp.data.filter((x: undefined)=>x!==undefined)
+      this.pagosDomicilio = this.pagos.reduce((a, b) => {
+        console.log(a,b)
+        if (b && b.pago.categories && b.pago.categories[0]&& b.pago.categories[0].id ==="5208") {
+          return a + b.pago.amount
+        }else{
+          return a
+        }
+      }, 0)
     })
   }
 
-  
-  crearGraficaBarrasComprasAbonos() {
-    this.chartOptions = this.graficaService.crearGraficaBarrasComprasAbonos(this.pagos)
-    this.abonosMes = this.pagos.reduce((a, b) => {
-      if (b.tipo === "in" && !b.pago.anotation && new Date(b.date).getMonth() === new Date().getMonth()) {
-        return a + b.pago.amount
-      } else {
-        return a
-      }
-    }, 0)
-  }
-
-  obtenerPedidosPorMes() {
-    return this.pedidoStorageService.obtenerPedidosPorMes(this.pedidos)
-  }
-
-  obtenerSumaPedidos(pedidos: any[]) {
-    return this.pedidoStorageService.obtenerSumaPedidos(pedidos)
-  }
-
-  obtenerComprasPorMes(arrayCompras: any[]) {
-    return arrayCompras.filter(x => {
-      const month = new Date().getMonth()
-      const monthCompra = x.compra.date.split("-")[1]
-      if (Number(monthCompra) - 1 === Number(month)) {
-        return x
-      }
-    })
-  }
-
-  obtenerSumaCompras(array: any[], balance: boolean) {
-    if (!balance) {
-      return array.reduce((a, b) => {
-        if (b.compra) {
-          this.totalCompras = a + b.compra.total
-          return a + b.compra.total
-        }
-      }, 0)
-    } else {
-      this.totalCompras = 0
-      return array.reduce((a, b) => {
-        if (b.compra) {
-          return a + b.compra.balance
-        }
-      }, 0)
-    }
-
-  }
-  obtenerCartera() {
-    return this.pedidos.reduce((a, b) => {
-      if (b.pedido) {
-        return a + b.pedido.balance
-      }
-    }, 0)
-  }
-
-  obtenerClientes() {
-    this.clienteService.obtenerClientes()
-
-  }
-
-  obtenerCompras() {
-    this.pedidoService.obtenerCompras()
-    this.db.list('compras').valueChanges().subscribe(comprasArray => {
-      const promise = new Promise<any>((resolveOuter) => {
-        console.log("compras ", comprasArray)
-        this.compras = comprasArray
-        this.compras.splice(comprasArray.length - 1, 1)
-        resolveOuter(this.compras)
-      })
-      promise.then(() => this.compras.length > 0 ? this.crearTarjetas() : null)
-    });
-  }
   crearTarjetas() {
 
     this.cards = [
@@ -239,6 +174,27 @@ export default class DashAnalyticsComponent {
         text: '',
         number: this.pagosDetalle.totalVentas,
         no: ""
+      },
+      {
+        background: 'bg-c-blue',
+        title: 'Ventas ADDI',
+        icon: 'icon-shopping-cart',
+        text: '',
+        img: "assets/images/addi-logo.avif",
+        widthImg: "50px",
+        number: this.pagosDetalle.totalPagosAddi,
+        no: ""
+      },
+      {
+        background: 'bg-c-yellow',
+        title: 'Ventas SISTECREDITO',
+        icon: 'icon-repeat',
+        text: '',
+        img: "assets/images/sistecredito-logo.png",
+        widthImg: "60px",
+        number: this.pagosDetalle.totalPagosSistecredito,
+        // no: 0
+
       },
       {
         background: 'bg-c-yellow',
@@ -260,6 +216,28 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
+        background: 'bg-c-yellow',
+        title: 'Gasto domicilios',
+        img: 'assets/icon/dollar-sign.svg',
+
+        text: '',
+        number: this.pagosDomicilio,
+        // no: 0,
+        //no2: 0
+
+      },
+      {
+        background: 'bg-c-yellow',
+        title: 'Facturas provedor pagas',
+        img: 'assets/icon/dollar-sign.svg',
+
+        text: '',
+        number: this.pagosDetalle.pagosProvedor,
+        // no: 0,
+        //no2: 0
+
+      },
+      {
         background: 'bg-c-purple',
         title: 'Cartera',
         img: 'assets/icon/dollar-sign.svg',
@@ -268,6 +246,7 @@ export default class DashAnalyticsComponent {
         number: this.pagosDetalle.totalCartera,
         no: ""
       },
+
         {
         background: 'bg-c-purple',
         title: 'Pagos Transferencias',
@@ -277,28 +256,29 @@ export default class DashAnalyticsComponent {
         number: this.pagosDetalle.totalPagosTransferencia,
         no: ""
       },
-      
       {
         background: 'bg-c-blue',
-        title: 'Ventas ADDI',
+        title: 'Desembolsos ADDI',
         icon: 'icon-shopping-cart',
         text: '',
         img: "assets/images/addi-logo.avif",
         widthImg: "50px",
-        number: this.pagosDetalle.totalPagosAddi,
+        number: this.pagosDetalle.totalDesembolsosAddi,
         no: ""
       },
       {
         background: 'bg-c-yellow',
-        title: 'Ventas SISTECREDITO',
+        title: 'Desembolsos SISTECREDITO',
         icon: 'icon-repeat',
         text: '',
         img: "assets/images/sistecredito-logo.png",
         widthImg: "60px",
-        number: this.pagosDetalle.totalPagosSistecredito,
-       // no: 0
+        number: this.pagosDetalle.totalDesembolsosSistecredito,
+        // no: 0
 
       },
+
+
       {
         background: 'bg-c-purple',
         title: 'En transito a Medellín (Saldo)',
@@ -323,110 +303,9 @@ export default class DashAnalyticsComponent {
         //no2: 0
 
       },
-      
+
+
     ];
-
-    this.crearGraficasDona()
-    this.crearGraficaSemanaASemana()
-  }
-
-  crearGraficaSemanaASemana() {
-    const ingresos = this.pagos.filter(pago => pago.tipo === "in")
-    this.chartOptions_3 = this.graficaService.crearGraficaSemanaASemana(this.compras, ingresos)
-    this.graficaSemanaSemana = true
-  }
-
-  crearGraficasDona() {
-    this.chartOptions_1 = this.graficaService.crearGraficasDona(this.totalCartera, this.totalVentas)
-  }
-
-  obtenerPagosMesMedioPago(medioPago: string, mesActual: boolean) {
-    if (!mesActual) {
-      return this.pedidos.filter(pedido => pedido.pago && pedido.pago.formaPago === medioPago)
-        .reduce((a, b) => {
-          if (b.pedido) {
-            return a + b.pedido.total
-          }
-        }, 0)
-    } else {
-      return this.pedidos.filter(pedido => {
-        if (pedido.pago && pedido.pago.formaPago === medioPago) {
-          if (new Date(pedido.pago.fechaDesembolso) > new Date()) {
-            return pedido
-          }
-        }
-      })
-        .reduce((a, b) => {
-          if (b.pedido) {
-            return a + b.pedido.total
-          }
-        }, 0)
-    }
-
-  }
-
-  obtenerSumaPedidosEstado(estado: string, tienda: string | boolean) {
-    if (estado) {
-      if (tienda) {
-        return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado
-          && tienda === this.compras.find(compra => "compras/" + compra.id === pedido.compra).compra.provider.name
-        )
-          .reduce((a, b) => {
-            if (b.pedido) {
-              return a + b.pedido.total
-            }
-          }, 0)
-      } else {
-        return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado)
-          .reduce((a, b) => {
-            if (b.pedido) {
-              return a + b.pedido.total
-            }
-          }, 0)
-      }
-
-    }
-  }
-  obtenerPedidosEstado(estado: string, tienda: string | boolean) {
-    if (estado) {
-      if (tienda) {
-        return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado
-          && tienda === this.compras.find(compra => "compras/" + compra.id === pedido.compra).compra.provider.name
-        )
-      } else {
-        return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado)
-
-      }
-    } else {
-      return []
-    }
-  }
-
-  obtenerSaldoEstado(estado: string | boolean, tienda: string | boolean) {
-    if (estado) {
-      if (!tienda) {
-        return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado)
-          .reduce((a, b) => {
-            if (b.pedido) {
-              return a + b.pedido.balance
-            }
-          }, 0)
-      } else {
-        return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado
-          && tienda === this.compras.find(compra => "compras/" + compra.id === pedido.compra).compra.provider.name
-        )
-          .reduce((a, b) => {
-            if (b.pedido) {
-              return a + b.pedido.balance
-            }
-          }, 0)
-      }
-    } else {
-      return 0
-    }
-  }
-  obtenerComprasSalgoEstado(estado: string | boolean) {
-    return this.pedidos.filter(pedido => pedido.trackingCompra && pedido.trackingCompra === estado)
   }
 
   onDateSelection(date: NgbDate) {
@@ -438,11 +317,13 @@ export default class DashAnalyticsComponent {
       const diaDesde =  (this.fromDate.day < 10) ? '0' + this.fromDate.day.toString() : this.fromDate.day.toString();
       const mesDesde =  (this.fromDate.month < 10) ? '0' + this.fromDate.month.toString() : this.fromDate.month.toString();
       const desde = this.fromDate.year+"-"+mesDesde+"-" + diaDesde
-      
+
       const diaHasta=(this.toDate.day < 10) ? '0' + this.toDate.day.toString() : this.toDate.day.toString();
       const mesHasta =  (this.toDate.month < 10) ? '0' + this.toDate.month.toString() : this.toDate.month.toString();
       const hasta = this.toDate.year+"-"+mesHasta+"-"+diaHasta
 
+      this.desde = desde
+      this.hasta = hasta
       this.obtenerDetallesPago(desde,hasta)
 
 		} else {
@@ -475,5 +356,30 @@ export default class DashAnalyticsComponent {
 		return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
 	}
 
+
+  agregarPago(gasto:any | undefined) {
+       const modal=  this.modalService.open(AgregarGastoComponent, { ariaLabelledBy: 'modal-basic-title' })
+        if(gasto){
+          modal.componentInstance.gasto = gasto
+        }
+        modal.result.then((data:any) => {
+            console.log(data)
+            if(data.success){
+              this.obtenerDetallesPago(this.desde,this.hasta)
+              this.obtenerGastos()
+            }
+          })
+  }
+
+  obtenerGastos(){
+    this.gastosService.obtenerGastosFijos().subscribe(resp=>{
+      if(resp){
+        this.gastos = resp.data.conceptos
+        this.totalGastos = this.gastos.reduce((a:any,b:any) => a + Number(b.valor), 0);
+        this.totalPagoGastos = this.gastos.reduce((a:any,b:any) => a + Number(b.valorPagado), 0);
+
+      }
+    })
+  }
 
 }

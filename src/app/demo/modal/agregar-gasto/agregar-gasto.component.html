@@ -1,0 +1,52 @@
+<div class="modal-header">
+    <h4 class="modal-title">Agregar pago</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-md-12">
+            <form [formGroup]="pagoForm">
+                <div class="form-group row">
+                    <label for="inputEmail3" class="col-sm-3 col-form-label">Concepto</label>
+                    <div class="col-sm-9">
+                        <select   formControlName="concepto" class="form-control form-select" id="inputConcepto"  >
+                          <option value="" selected="true" disabled="disabled">seleccione una opción</option>
+                          <option value="5208">DOMICILIO</option>
+                          <option value="5203">SERVICIOS PUBLICOS - AGUA LEDS</option>
+                          <option value="5224">ALEGRA</option>
+                          <option value="5236">BOLSAS, MARCADORES, CINTA, ETC.</option>
+                          <option value="5246">CHAVA</option>
+                          <option value="5165">DIEGO</option>
+                          <option value="5209">APARTAMENTO PELDAR</option>
+                          <option value="5160">SALARIO TRABAJADORA</option>
+                          <option value="5238">SALARIO JULIAN</option>
+                          <option value="5247">TARJETA CRÉDITO NU</option>
+                          <option value="5250">TARJETA CRÉDITO AMEX</option>
+                          <option value="5251">TARJETA CRÉDITO POPULAR</option>
+                          <option value="5252">TARJETA CRÉDITO RAPPI</option>
+                          <option value="5253">DAVIVIENDA</option>
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputValor" class="col-sm-3 col-form-label">Valor</label>
+                    <div class="col-sm-9">
+                        <input currencyMask [options]="{ prefix: '$ ', thousands: '.', decimal: ',',precision:0 }" type="text" formControlName="valor" class="form-control" id="inputValor" placeholder="Ingresar valor" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="inputFecha" class="col-sm-3 col-form-label">Fecha</label>
+                    <div class="col-sm-9">
+                        <input type="date" formControlName="fecha" class="form-control" id="inputFecha" placeholder="Ingresar fecha" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="agregarPago()">Agregar</button>
+
+</div>

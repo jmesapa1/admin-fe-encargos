@@ -17,6 +17,9 @@ import 'mousetrap';
 
 // bootstrap import
 import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatepickerModule, NgbCollapseModule, NgbAccordionModule, NgbHighlight, NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
+import { DetallePedidoComponent } from 'src/app/demo/modal/detalle-pedido/detalle-pedido.component';
+import { AgregarGastoComponent } from 'src/app/demo/modal/agregar-gasto/agregar-gasto.component';
+import { CurrencyMaskModule } from 'ng2-currency-mask';
 
 @NgModule({
   imports: [
@@ -33,11 +36,14 @@ import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatep
     NgbCollapseModule,
     NgbAccordionModule,
     NgbAccordionModule,
-    AsyncPipe, 
-    NgbHighlight, 
+    AsyncPipe,
+    NgbHighlight,
     NgbPaginationModule,
     DecimalPipe,
-    NgbdSortableHeader
+    NgbdSortableHeader,
+    DetallePedidoComponent,
+    AgregarGastoComponent,
+    CurrencyMaskModule
 
   ],
   exports: [
@@ -55,8 +61,9 @@ import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatep
     NgbDropdownModule,
     NgbDatepickerModule,
     NgbCollapseModule,
-    NgbAccordionModule
-    
+    NgbAccordionModule,
+
+
   ],
   providers:[NgbDropdownConfig,NgbDatepickerModule,NgbAccordionModule,DecimalPipe],
   declarations: [DataFilterPipe, SpinnerComponent]
