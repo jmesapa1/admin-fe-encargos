@@ -20,6 +20,11 @@ export class PagoService {
     });
   }
 
+
+   abonarFacturaPedido(data: any){
+      return this.http.post<any>(environment.apiUrl+"pedidos/pagar/factura",{...data})
+    }
+
   agregarEgreso(formValue: any) {
     let idConcepto
     let pagoGastoRecurrente = true;

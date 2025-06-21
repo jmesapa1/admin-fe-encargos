@@ -20,7 +20,7 @@ import { NgbDropdownModule, NgbNavModule, NgbModule, NgbDropdownConfig, NgbDatep
 import { DetallePedidoComponent } from 'src/app/demo/modal/detalle-pedido/detalle-pedido.component';
 import { AgregarGastoComponent } from 'src/app/demo/modal/agregar-gasto/agregar-gasto.component';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
-
+import { PagoFacturaComponent } from 'src/app/demo/modal/pago-factura/pago-factura.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -43,6 +43,7 @@ import { CurrencyMaskModule } from 'ng2-currency-mask';
     NgbdSortableHeader,
     DetallePedidoComponent,
     AgregarGastoComponent,
+    PagoFacturaComponent,
     CurrencyMaskModule
 
   ],
