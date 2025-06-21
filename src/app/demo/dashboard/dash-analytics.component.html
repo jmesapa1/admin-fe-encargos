@@ -3,7 +3,7 @@
     <div class="row">
 
       <div class="col-6">
-        <label  class="form-label">Fecha inicio</label>
+        <label class="form-label">Fecha inicio</label>
         <div class="dp-hidden position-absolute">
           <div class="input-group">
             <input name="datepicker" class="form-control" ngbDatepicker #datepicker="ngbDatepicker"
@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="col-6">
-        <label  class="form-label">Fecha fin</label>
+        <label class="form-label">Fecha fin</label>
         <div class="input-group">
 
           <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
@@ -49,7 +49,7 @@
     @for (card of cards; track card) {
     <div class="col-md-6 col-xl-3">
       <app-card [hidHeader]="true" cardClass="{{ card.background }} order-card">
-        <h6 class="text-white"><b>{{ card.title }}</b></h6>
+        <h6 class="text-white"><b>{{ card.title }} </b></h6>
         <h2 class="text-end text-white">
           <i *ngIf="!card.img" class="feather {{ card.icon }}  float-start"></i>
           <img class="float-start" style="color:white;width:{{card.widthImg}}" *ngIf="card.img" src="{{card.img}}">
@@ -65,99 +65,114 @@
       </app-card>
     </div>
     }
-    </ng-container>
-
-</div>
-
-    <hr/>
-<div class="row">
-  <ng-container>
-
-  <div class="col-md-6 col-xl-3">
-      <app-card ngbTooltip="Ventas - compras" [hidHeader]="true" cardClass="bg-c-blue order-card mb-2 objectClickeable">
-        <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
-        <h6 class="text-black"><b> Utilidad bruta
-          <br> </b></h6>
-        <h5 class="text-black" *ngIf="this.pagosDetalle">${{ this.pagosDetalle.totalVentas - this.pagosDetalle.totalCompras  | number }}</h5>
-      </app-card>
-  </div>
-  <div class="col-md-6 col-xl-3">
-
-  <app-card ngbTooltip="Abonos transferencia + desembolsos ADDI + desembolsos SISTECREDITO - Pagos facturas provedor - Pagos domicilio - Pago Gastos" [hidHeader]="true" cardClass="bg-c-blue order-card mb-2 objectClickeable">
-        <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
-    <h6 class="text-black"><b> Balance</b></h6>
-          <h5 class="text-black" *ngIf="this.pagosDetalle">${{ this.pagosDetalle.totalPagosTransferencia + this.pagosDetalle.totalDesembolsosAddi + this.pagosDetalle.totalDesembolsosSistecredito + - this.pagosDetalle.pagosProvedor -this.pagosDomicilio - this.totalPagoGastos  | number }}</h5>
-
-  </app-card>
-  </div>
   </ng-container>
 
 </div>
 
+<hr />
+
+
+
 <div class="row">
-  <div class="col-md-6 col-xl-3">
+
+
+  @if(gastos.length!==0){
+
+<div class="row">
+  <ng-container>
+
+    <div class="col-md-6 col-xl-3">
+      <app-card ngbTooltip="Ventas - compras" [hidHeader]="true" cardClass="bg-c-blue order-card mb-2 objectClickeable">
+        <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
+        <h6 class="text-black"><b> Utilidad bruta
+            <br> </b></h6>
+        <h5 class="text-black" *ngIf="this.pagosDetalle">${{ this.pagosDetalle.totalVentas -
+          this.pagosDetalle.totalCompras | number }}</h5>
+      </app-card>
+    </div>
+    <div class="col-md-6 col-xl-3">
+
+      <app-card
+        ngbTooltip="Abonos transferencia + desembolsos ADDI + desembolsos SISTECREDITO - Pagos facturas provedor - Pagos domicilio - Pago Gastos"
+        [hidHeader]="true" cardClass="bg-c-blue order-card mb-2 objectClickeable">
+        <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
+        <h6 class="text-black"><b> Balance</b></h6>
+        <h5 class="text-black" *ngIf="this.pagosDetalle">${{ this.pagosDetalle.totalPagosTransferencia +
+          this.pagosDetalle.totalDesembolsosAddi + this.pagosDetalle.totalDesembolsosSistecredito + -
+          this.pagosDetalle.pagosProvedor -this.pagosDomicilio - this.totalPagoGastos | number }}</h5>
+
+      </app-card>
+    </div>
+  </ng-container>
+
+</div>
+    <div class="col-md-6 col-xl-3">
     <ng-container>
 
 
 
-    <div (click)="agregarPago(undefined)">
+      <div (click)="agregarPago(undefined)">
+        <app-card [hidHeader]="true" cardClass="bg-c-white order-card mb-2 objectClickeable">
+          <h6 class="text-black"><b> Agregar gasto <i class="feather icon-plus "></i>
+            </b></h6>
+        </app-card>
+      </div>
       <app-card [hidHeader]="true" cardClass="bg-c-white order-card mb-2 objectClickeable">
-        <h6 class="text-black"><b> Agregar gasto <i class="feather icon-plus "></i>
-        </b></h6>
+        <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
+        <h6 class="text-black"><b> Total gastos
+          </b></h6>
+        <span class="text-black">${{ totalGastos | number }}</span>
+
       </app-card>
-    </div>
-    <app-card [hidHeader]="true" cardClass="bg-c-white order-card mb-2 objectClickeable">
-      <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
-      <h6 class="text-black"><b> Total gastos
-      </b></h6>
-      <span class="text-black">${{ totalGastos | number }}</span>
+      <app-card [hidHeader]="true" cardClass="bg-c-white order-card mb-2 objectClickeable">
+        <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
 
-    </app-card>
-    <app-card [hidHeader]="true" cardClass="bg-c-white order-card mb-2 objectClickeable">
-      <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
-
-      <h6 class="text-black"><b> Gastos pagados
-      </b></h6>
-      <span class="text-black">${{ totalPagoGastos  | number }}</span>
-    </app-card>
+        <h6 class="text-black"><b> Gastos pagados
+          </b></h6>
+        <span class="text-black">${{ totalPagoGastos | number }}</span>
+      </app-card>
     </ng-container>
   </div>
-
   <div class="col-md-6 col-xl-9">
     <h3>Gastos mensuales</h3>
     <div class="table-responsive">
       <table class="table table-dark">
         <thead>
-        <tr>
-          <th>#</th>
-          <th>Concepto</th>
-          <th>Valor</th>
-          <th>Valor pagado</th>
-          <th>Fecha pagos</th>
-          <th>Acción</th>
-        </tr>
+          <tr>
+            <th>#</th>
+            <th>Concepto</th>
+            <th>Valor</th>
+            <th>Valor pagado</th>
+            <th>Fecha pagos</th>
+            <th>Acción</th>
+          </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let gasto of gastos">
-          <th scope="row">1</th>
-          <td>{{ gasto.concepto }}</td>
-          <td>${{ gasto.valor | number }}</td>
-          <td>${{ gasto.valorPagado | number }}</td>
-          <td><h6 class="text-white"  *ngFor="let pago of gasto.pagos">${{ pago?.valor | number }} - {{ pago?.fecha }}</h6></td>
+          @for (gasto of gastos; track gasto; let idx = $index) {
+          <tr>
+            <th scope="row"> {{gastos.length}}</th>
+            <td>{{ gasto.concepto }}</td>
+            <td>${{ gasto.valor | number }}</td>
+            <td>${{ gasto.valorPagado | number }}</td>
+            <td>
+              <h6 class="text-white" *ngFor="let pago of gasto.pagos">${{ pago?.valor | number }} - {{ pago?.fecha }}
+              </h6>
+            </td>
 
-          <td>
-            @if(gasto.pagado){
+            <td>
+              @if(gasto.pagado){
               <input [(ngModel)]="gasto.pagado" disabled class="form-check-input" type="checkbox" id="flexCheckDefault">
               <label class="form-check-label mr-2" for="flexCheckDefault">
                 Pagado
               </label>
-            }@else{
+              }@else{
               <button type="button" class="btn btn-primary" (click)="agregarPago(gasto)">Pagar</button>
 
-            }
+              }
 
-          </td>
-        </tr>
+            </td>
+          </tr>
+          }
 
         </tbody>
       </table>
@@ -165,16 +180,18 @@
     </div>
 
   </div>
+  }
+
 </div>
 
 
 
 
-    <!-- order-card end -->
+<!-- order-card end -->
 
-    <!-- account-section start -->
+<!-- account-section start -->
 
-    <!--<div class="col-md-6 col-lg-4">
+<!--<div class="col-md-6 col-lg-4">
     <app-card [hidHeader]="true" blockClass="text-center" *ngIf="this.graficas">
       <i class="fa fa-user-circle text-c-blue d-block f-40"></i>
       <h4 class="m-t-20">
@@ -194,10 +211,10 @@
       <p class="m-b-20">Clientes que nos buscaron por whatsapp</p>
     </app-card>
   </div>-->
-    <!-- account-section end -->
+<!-- account-section end -->
 
-    <!-- conversion-section start -->
-    <!--<div class="col-lg-4 col-md-12">
+<!-- conversion-section start -->
+<!--<div class="col-lg-4 col-md-12">
     <app-card [hidHeader]="true" footerClass="border border-top-0 p-0 overflow-hidden" [isCardFooter]="true">
       <h6>Ventas respecto mes anterior</h6>
       <h4 class="m-0">
@@ -210,7 +227,7 @@
       <span>Vendido</span>
       <div class="app-card-footer"></div>
     </app-card>-->
-    <!--<app-card [hidHeader]="true" footerClass="border border-top-0 p-0 overflow-hidden" [isCardFooter]="true">
+<!--<app-card [hidHeader]="true" footerClass="border border-top-0 p-0 overflow-hidden" [isCardFooter]="true">
       <h6>Compras respecto mes anterior</h6>
       <h4 class="m-0">
         0.85%
@@ -364,7 +381,7 @@
   </div>-->
 
 
-    <!--<div class="col-md-12">
+<!--<div class="col-md-12">
     <app-card cardTitle="Monitor de pedidos" cardClass="tab-card tab-content" blockClass="nav-fill" [options]="false">
       <ul ngbNav #nav="ngbNav" aria-busy="true" class="nav-pills">
         <li [ngbNavItem]="1" class="flex">
@@ -393,7 +410,7 @@
       <div [ngbNavOutlet]="nav" class="mt-2"></div>
     </app-card>
   </div>-->
-    <!--<div class="col-lg-8 col-md-12">
+<!--<div class="col-lg-8 col-md-12">
     <app-card cardTitle="Activity Feed" blockClass="m-t-10" [options]="false">
       <ul class="feed-blog ps-0">
         <li class="active-feed">
@@ -456,4 +473,4 @@
       </ul>
     </app-card>
   </div>-->
-    <!-- conversion-section end -->
+<!-- conversion-section end -->

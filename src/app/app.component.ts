@@ -9,7 +9,8 @@ import { NavigationEnd, Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   // constructor
-  constructor(private router: Router) {}
+  constructor(private router: Router) {
+  }
 
   // life cycle event
   ngOnInit() {

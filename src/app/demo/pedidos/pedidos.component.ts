@@ -164,7 +164,7 @@ export default class PedidosComponent {
   obtenerPedidos() {
     this.pedidoStorageService.obtenerPedidos().subscribe(async resp => {
       this.pedidos = resp.data.filter((x: undefined) => x !== undefined).sort(
-        (a: { fecha: any; }, b: { fecha: any; }) => new Date(a.fecha).getTime() > new Date(b.fecha).getTime() ? -1 : 0
+        (a: { fecha: any, id:any }, b: { fecha: any, id : any }) => Number(a.id)>Number(b.id) ? -1 : 0
       )
       console.log("pedidos->", resp, this.pedidos)
       this.pedidos = this.pedidos.map(x => {
@@ -200,7 +200,7 @@ export default class PedidosComponent {
     this.pedidoService.obtenerCompras()
     this.comprasService.obtenerComprasData().subscribe((resp: { data: any[]; }) => {
       this.compras = resp.data.filter((x: undefined) => x !== undefined).sort(
-        (a: { fecha: any; }, b: { fecha: any; }) => new Date(a.fecha).getTime() > new Date(b.fecha).getTime() ? -1 : 0
+        (a: { fecha: any, id:any; }, b: { fecha: any,id:any; }) => Number(a.id)>Number(b.id) ? -1 : 0
       )
       console.log("compras->", resp, this.compras)
       this.compraPendientes = this.compras.filter(compra => !compra.pedido && compra.compra.termsConditions !== "ENTREGA INMEDIATA" &&
