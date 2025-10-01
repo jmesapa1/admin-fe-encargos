@@ -103,6 +103,35 @@ export default class DashAnalyticsComponent {
 
   totalGastos = 0
   totalPagoGastos=0
+
+  // Elementos del dashboard
+  elementos: any[] = [
+    {
+      imagen: 'https://tse3.mm.bing.net/th/id/OIP.8rxc3DrFUlvuooECyKCecAHaHa?rs=1&pid=ImgDetMain&o=7&rm=3',
+      nombre: 'Gestión de Pedidos',
+      descripcion: 'Administra y controla todos los pedidos de tus clientes de manera eficiente',
+      color: '#007bff'
+    },
+    {
+      imagen: 'https://tse2.mm.bing.net/th/id/OIP.NH-LFbDF27Isd0cv8KibYQHaHa?rs=1&pid=ImgDetMain&o=7&rm=3', 
+      nombre: 'Control de Gastos',
+      descripcion: 'Mantén un registro detallado de todos los gastos operativos',
+      color: '#28a745'
+    },
+    {
+      imagen: 'https://i.pinimg.com/736x/6d/87/90/6d8790eaff23d22ee11ad46029a90ca2.jpg',
+      nombre: 'Reportes Financieros',
+      descripcion: 'Genera reportes completos de ventas, compras y utilidades',
+      color: '#ffc107'
+    },
+    {
+      imagen: 'https://i.pinimg.com/originals/d6/40/3f/d6403f721949e8833d9fad0d32d9ffe3.jpg',
+      nombre: 'Gestión de Clientes',
+      descripcion: 'Mantén organizada la información de todos tus clientes',
+      color: '#dc3545'
+    }
+  ]
+
   // constructor
   constructor(public pagoStorageService: PagoStorageService, public pedidoStorageService: PedidoStorageService, public pedidoService: PedidosService, public pagoService: PagoService, public db: AngularFireDatabase, public clienteService: ClientesService, private graficaService: GraficaService,
     private comprasService:ComprasService, private gastosService:GastosService

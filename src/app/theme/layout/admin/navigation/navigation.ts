@@ -39,19 +39,19 @@ export const NavigationItems: NavigationItem[] = [
         url: '/pedidos',
         icon: 'feather icon-clipboard'
       },
-      {
+      /*{
         id: 'calendario',
         title: 'Calendario',
         type: 'item',
         url: '/auth/signup',
         icon: 'feather icon-home'
-      },
+      },*/
 
     ]
   },
   {
     id: 'ui-component',
-    title: 'Ui Component',
+    title: 'Component',
     type: 'group',
     icon: 'icon-group',
     children: [
@@ -101,7 +101,7 @@ export const NavigationItems: NavigationItem[] = [
       }
     ]
   },
-  {
+ /* {
     id: 'Authentication',
     title: 'Authentication',
     type: 'group',
@@ -125,9 +125,8 @@ export const NavigationItems: NavigationItem[] = [
         target: true,
         breadcrumbs: false
       }
-    ]
-  },
-  {
+    ]  },*/
+  /*{
     id: 'chart',
     title: 'Chart',
     type: 'group',
@@ -166,22 +165,9 @@ export const NavigationItems: NavigationItem[] = [
         icon: 'feather icon-server'
       }
     ]
-  },
-  {
-    id: 'other',
-    title: 'Other',
-    type: 'group',
-    icon: 'icon-group',
-    children: [
-      {
-        id: 'pedidos',
-        title: 'Pedidos',
-        type: 'item',
-        url: '/pedidos',
-        classes: 'nav-item',
-        icon: 'feather icon-sidebar'
-      },
-      {
+  },*/
+
+     /* {
         id: 'menu-level',
         title: 'Menu Levels',
         type: 'collapse',
@@ -216,7 +202,6 @@ export const NavigationItems: NavigationItem[] = [
             ]
           }
         ]
-      }
+      }*/
     ]
-  }
-];
+ 

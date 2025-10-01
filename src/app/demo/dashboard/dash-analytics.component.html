@@ -43,6 +43,25 @@
   </form>
 </div>
 
+
+  <div class="row mb-4">
+  @for (elemento of elementos; track elemento) {
+  <div class="col-md-6 col-xl-3">
+    <app-card [hidHeader]="true" cardClass="bg-c-white order-card mb-2">
+      <div class="text-center">
+        <img [src]="elemento.imagen" alt="elemento.nombre" class="img-fluid mb-3" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;">
+        <h6 class="card-title mb-2" [style.color]="elemento.color" style="font-weight: bold; font-size: 14px;">{{ elemento.nombre }}</h6>
+        <p class="card-text" style="font-size: 12px; color: #666; margin: 0; margin-bottom: 15px;">{{ elemento.descripcion }}</p>
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-success btn-sm" style="font-size: 11px;">Agregar</button>
+          <button class="btn btn-danger btn-sm" style="font-size: 11px;">Eliminar</button>
+        </div>
+      </div>
+    </app-card>
+  </div>
+  }
+</div>
+
 <div class="row">
   <ng-container>
     <!-- order-card start -->
