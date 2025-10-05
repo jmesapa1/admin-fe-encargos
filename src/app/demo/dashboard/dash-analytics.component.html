@@ -366,14 +366,17 @@
               </thead>
               <tbody>
                 @for (pago of this.pagos; track pago;let idx = $index) {
-                <tr *ngIf="pago.pago">
+                <tr *ngIf="pago.pago" [class.table-success]="pago.tipo==='in'" [class.table-danger]="pago.tipo==='out'">
                   <td>{{ pago.date }}</td>
-                  <td [class.text-success]="pago.tipo==='in'" [class.text-danger]="pago.tipo==='out'">{{ pago.tipo }}
-                    <i class="feather icon-arrow-up" *ngIf="pago.tipo==='in'"></i>
-                    <i class="feather icon-arrow-down" *ngIf="pago.tipo==='out'"></i>
+                  <td [class.text-success]="pago.tipo==='in'" [class.text-danger]="pago.tipo==='out'">
+                    <span *ngIf="pago.tipo==='in'" class="badge bg-success">INGRESO</span>
+                    <span *ngIf="pago.tipo==='out'" class="badge bg-danger">EGRESO</span>
+                    <i class="feather icon-arrow-up ms-2" *ngIf="pago.tipo==='in'"></i>
+                    <i class="feather icon-arrow-down ms-2" *ngIf="pago.tipo==='out'"></i>
                   </td>
-                  <td [class.text-success]="pago.tipo==='in'" [class.text-danger]="pago.tipo==='out'"><b>${{
-                      pago.pago?.amount | number}}</b></td>
+                  <td [class.text-success]="pago.tipo==='in'" [class.text-danger]="pago.tipo==='out'">
+                    <b>${{ pago.pago?.amount | number }}</b>
+                  </td>
                   @if(pago.tipo==='out'){
                   <td>Pago proveedor</td>
                   }

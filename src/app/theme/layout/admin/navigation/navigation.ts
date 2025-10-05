@@ -51,7 +51,7 @@ export const NavigationItems: NavigationItem[] = [
   },
   {
     id: 'ui-component',
-    title: 'Component',
+    title: '5Component',
     type: 'group',
     icon: 'icon-group',
     children: [

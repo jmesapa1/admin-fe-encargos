@@ -186,7 +186,6 @@ export default class DashAnalyticsComponent {
   }
 
   crearTarjetas() {
-
     this.cards = [
       {
         background: 'bg-c-blue',
@@ -205,7 +204,7 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-blue',
+        background: 'bg-c-green',
         title: 'Ventas ADDI',
         icon: 'icon-shopping-cart',
         text: '',
@@ -215,7 +214,7 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-green',
         title: 'Ventas SISTECREDITO',
         icon: 'icon-repeat',
         text: '',
@@ -226,7 +225,7 @@ export default class DashAnalyticsComponent {
 
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-red',
         title: 'Compras pendientes',
         icon: 'icon-repeat',
         text: '',
@@ -245,7 +244,7 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-red',
         title: 'Gasto domicilios',
         img: 'assets/icon/dollar-sign.svg',
 
@@ -256,7 +255,7 @@ export default class DashAnalyticsComponent {
 
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-red',
         title: 'Facturas provedor pagas',
         img: 'assets/icon/dollar-sign.svg',
 
@@ -277,7 +276,7 @@ export default class DashAnalyticsComponent {
       },
 
         {
-        background: 'bg-c-purple',
+        background: 'bg-c-blue',
         title: 'Pagos Transferencias',
         img: 'assets/icon/dollar-sign.svg',
         text: '',
@@ -286,7 +285,7 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-blue',
+        background: 'bg-c-green',
         title: 'Desembolsos ADDI',
         icon: 'icon-shopping-cart',
         text: '',
@@ -296,7 +295,7 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-green',
         title: 'Desembolsos SISTECREDITO',
         icon: 'icon-repeat',
         text: '',
@@ -309,7 +308,7 @@ export default class DashAnalyticsComponent {
 
 
       {
-        background: 'bg-c-purple',
+        background: 'bg-c-blue',
         title: 'En transito a Medellín (Saldo)',
         icon: 'icon-send',
         text: '',
@@ -322,7 +321,7 @@ export default class DashAnalyticsComponent {
 
       },
       {
-        background: 'bg-c-blue',
+        background: 'bg-c-yellow',
         title: 'Espera de despacho',
         icon: 'icon-calendar',
         text: '',

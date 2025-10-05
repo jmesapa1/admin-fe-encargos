@@ -78,18 +78,35 @@ span .badge.estado{
   cursor: pointer !important;
 }
 .entregado{
-  background: #b1deb1 !important;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+  border-left: 4px solid #28a745 !important;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1) !important;
 }
 
 .camino-med-bg{
-  background: white !important;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+  border-left: 4px solid #ffc107 !important;
+  box-shadow: 0 2px 4px rgba(255, 193, 7, 0.1) !important;
 }
+
+.camino-usa-bg{
+  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%) !important;
+  border-left: 4px solid #17a2b8 !important;
+  box-shadow: 0 2px 4px rgba(23, 162, 184, 0.1) !important;
+}
+
 .espera-despacho-bg{
-  background: #3adde9 !important;
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
+  border-left: 4px solid #dc3545 !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1) !important;
 }
+
 .falta-comprar-bg{
-  background: rgb(224, 122, 122) !important;
+  background: linear-gradient(135deg, #f8d7da 0%, #f1b0b7 100%) !important;
+  border-left: 4px solid #dc3545 !important;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.15) !important;
 }
+
 .pcoded-header.header-blue {
   background: linear-gradient(to right, #8a8542, #7e6536);
   color: rgba(255, 255, 255, 0.8);
