@@ -1,7 +1,7 @@
 import { PaymentSubmission } from 'src/app/shared/payment-submission';
 import { DecimalPipe, CommonModule } from '@angular/common';
 import { Component, inject, Input, signal, WritableSignal } from '@angular/core';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalDismissReasons, NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PagoService } from 'src/app/services/pago/pago.service';
 import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
@@ -24,8 +24,8 @@ export class PagoFacturaComponent {
   pagoForm: FormGroup;
   constructor(private pagoService: PagoService, private pedidosService: PedidosService) {
     this.pagoForm = new FormGroup({
-      valor: new FormControl(''),
-      idMedioPago: new FormControl(''),
+      valor: new FormControl('', Validators.required),
+      idMedioPago: new FormControl('', Validators.required),
     });
   }
 
@@ -38,13 +38,13 @@ export class PagoFacturaComponent {
   agregarPago() {
     this.envio.enviar(() => this.pagoService.abonarFacturaPedido({...this.pagoForm.value,idPedido:this.pedido.id}), (resp: any) => {
       if (resp.success) {
-        if (resp.response?.invoices?.[0]?.balance === 0 && this.pedido.estado !== 'Falta comprar') {
+        if (resp.response?.invoices?.[0]?.balance === 0 && this.pedido.estadoCompra !== 'Falta comprar') {
           const pedidoEntregado = confirm('El balance del pedido quedó en $0. ¿El pedido ya fue entregado al cliente?');
-          if (pedidoEntregado && this.pedido.estado !== 'Entregado cliente') {
+          if (pedidoEntregado && this.pedido.estadoCompra !== 'Entregado cliente') {
             this.pedidosService.cambiarEstadoCompra('Entregado cliente', this.pedido.id).subscribe({
               next: () => this.activeModal.close(resp),
-              error: () => {
-                alert('El pago se registró, pero no fue posible actualizar el estado de entrega.');
+              error: error => {
+                this.envio.reportarError(error, 'El pago se registró, pero no fue posible actualizar el estado de entrega.');
                 this.activeModal.close(resp);
               }
             });

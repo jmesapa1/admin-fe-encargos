@@ -5571,6 +5571,7 @@ long@^5.0.0:
     bootstrap "^5.3.3"
     firebase "^10.13.1"
     hammerjs "^2.0.8"
+    html2canvas "^1.4.1"
     jquery "^3.7.1"
     jspdf "^4.0.0"
     lodash "^4.17.21"
@@ -7682,6 +7683,11 @@ svg.select.js@^3.0.1:
   integrity sha512-h5IS/hKkuVCbKSieR9uQCj9w+zLHoPh+ce19bBYyqF53g6mnPB8sAtIbe1s9dh2S2fCmYX2xel1Ln3PJBbK4kw==
   dependencies:
     svg.js "^2.6.5"
+
+sweetalert2@^11.26.25:
+  version "11.26.25"
+  resolved "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.26.25.tgz"
+  integrity sha512-+hunCOJdJ6FLj04T9YSLvvZXRjsvIkTeTKP2e4VF8CaBias961BTnWiSFAy7F/CM5eq3QK2Rraoc5Gzftslvkg==
 
 symbol-observable@4.0.0:
   version "4.0.0"

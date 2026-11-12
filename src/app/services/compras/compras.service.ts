@@ -30,8 +30,6 @@ export class ComprasService {
     'en-US'
   );
 
-  console.log('fechas->', fechainicio, fechafin);
-
   const coleccion = collection(this.firestore, 'compras');
 
   // Entrega inmediata
@@ -78,7 +76,6 @@ export class ComprasService {
     fechainicio.setMonth(fechainicio.getMonth() - 3);
     fechainicio = formatDate(fechainicio, 'yyyy-MM-dd', 'en-US');
     let fechafin = formatDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 'yyyy-MM-dd', 'en-US');
-    console.log("fechas->", fechainicio, fechafin)
     let coleccion = collection(this.firestore, 'obligacionesMensuales');
     const orderedQueryAsc = query(coleccion, orderBy("saldo", "desc"), orderBy("fecha", "desc"), where('fecha', '>=', fechainicio), where('fecha', '<=', fechafin));
 
@@ -97,7 +94,6 @@ export class ComprasService {
     fechainicio.setMonth(fechainicio.getMonth());
     fechainicio = formatDate(fechainicio, 'yyyy-MM-dd', 'en-US');
     let fechafin = formatDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 'yyyy-MM-dd', 'en-US');
-    console.log("fechas->", fechainicio, fechafin)
     let coleccion = collection(this.firestore, 'pagos');
     const orderedQueryAsc = query(coleccion, orderBy("fecha", "desc"), where('fecha', '>=', fechainicio), where('fecha', '<=', fechafin));
     const orderedDataObservable = collectionData(orderedQueryAsc);
@@ -113,14 +109,7 @@ export class ComprasService {
 
 
   obtenerCompras() {
-    this.http.get<Compra[]>(environment.apiUrl + "app/compras").subscribe({
-      next: (data) => {
-        console.log(data)
-      },
-      error: (error) => {
-        console.log(error)
-      },
-    });
+    this.http.get<Compra[]>(environment.apiUrl + "app/compras").subscribe();
   }
 
   obtenerComprasData(): Observable<any> {
@@ -137,7 +126,6 @@ export class ComprasService {
     fechainicio.setMonth(fechainicio.getMonth() - 1);
     fechainicio = formatDate(fechainicio, 'yyyy-MM-dd', 'en-US');
     let fechafin = formatDate(new Date(date.getFullYear(), date.getMonth(), date.getDate()), 'yyyy-MM-dd', 'en-US');
-    console.log("fechas->", fechainicio, fechafin)
     let coleccion = collection(this.firestore, 'pedidos');
     const orderedQueryAsc = query(coleccion, orderBy("fecha", "asc"), where('idProvedor', '!=', "1045"), where('estadoCompra', '==', 'Comprado'), where('guia', '==', null), where('fecha', '>=', fechainicio), where('fecha', '<=', fechafin));
     const orderedDataObservable = collectionData(orderedQueryAsc);

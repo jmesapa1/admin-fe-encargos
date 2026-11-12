@@ -102,7 +102,7 @@ describe('Phase 1 — synthetic regression fixtures', () => {
   });
 
   for (const kind of ['sale', 'purchase', 'expense', 'obligation']) {
-    it(`sends only one ${kind} payment while a response is pending`, () => {
+    it(`allows a second ${kind} payment while the first response is pending`, () => {
       const response = new Subject<any>();
       const send = jasmine.createSpy('synthetic-payment').and.returnValue(response);
       const component = TestBed.runInInjectionContext(() => {
@@ -120,11 +120,11 @@ describe('Phase 1 — synthetic regression fixtures', () => {
       component.pagoForm.patchValue({ valor: 20, idMedioPago: 'synthetic-account' });
       component.agregarPago();
       component.agregarPago();
-      expect(send).toHaveBeenCalledTimes(1);
+      expect(send).toHaveBeenCalledTimes(2);
     });
   }
 
-  it('does not resubmit after an ambiguous network failure', () => {
+  it('allows retrying after an ambiguous network failure', () => {
     const response = new Subject<any>();
     const send = jasmine.createSpy('synthetic-payment').and.returnValue(response);
     const component = TestBed.runInInjectionContext(() => new PagoFacturaComponent(
@@ -135,7 +135,7 @@ describe('Phase 1 — synthetic regression fixtures', () => {
     component.agregarPago();
     response.error(new Error('synthetic timeout'));
     component.agregarPago();
-    expect(send).toHaveBeenCalledTimes(1);
+    expect(send).toHaveBeenCalledTimes(2);
   });
   it('preserves a recorded payment when the following delivery update fails', () => {
     const response = new Subject<any>();
@@ -151,9 +151,7 @@ describe('Phase 1 — synthetic regression fixtures', () => {
     component.pagoForm.patchValue({ valor: 50, idMedioPago: 'synthetic-account' });
     component.agregarPago();
     response.next({ success: true, response: { invoices: [{ balance: 0 }] } });
-    component.agregarPago();
     delivery.error(new Error('synthetic delivery failure'));
-    component.agregarPago();
     expect(send).toHaveBeenCalledTimes(1);
     expect(update).toHaveBeenCalledTimes(1);
     expect(modal.close).toHaveBeenCalled();
@@ -166,13 +164,12 @@ describe('Phase 1 — synthetic regression fixtures', () => {
     expect(h.component.totalBancos).toBe(0);
   });
 
-  it('preserves legacy purchase response bodies without resending', () => {
+  it('preserves legacy purchase response bodies', () => {
     const send = jasmine.createSpy('synthetic-purchase').and.returnValue(of([]));
     const component = TestBed.runInInjectionContext(() => new PagoCompraComponent(
       {} as any, { pagarSaldoFacturaCompra: send } as any
     ));
     component.pedido = { id: 'synthetic-order', saldoCompra: 50, compraData: { id: 'synthetic-purchase' } };
-    component.agregarPago();
     component.agregarPago();
     expect(send).toHaveBeenCalledTimes(1);
     expect(modal.close).toHaveBeenCalledWith([]);

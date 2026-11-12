@@ -31,7 +31,6 @@ export class GenerarFacturaCompraComponent {
   }
 
   ngOnInit() {
-    console.log(this.pedido)
     if (this.pedido) {
       this.pagoForm.controls["idProducto"].setValue(this.pedido.pedido.items[0].id)
     }
@@ -48,7 +47,6 @@ export class GenerarFacturaCompraComponent {
 
   generarFacturaCompra() {
 
-    console.log(this.pagoForm.value)
     this.comprasService.generarFacturaCompra({ ...this.pagoForm.value}).subscribe((resp: any) => {
       if (resp.success) {
         this.activeModal.close(resp)

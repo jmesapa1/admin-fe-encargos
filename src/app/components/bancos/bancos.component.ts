@@ -23,17 +23,15 @@ export class BancosComponent {
   }
 
   obtenerBancos(){
-    console.log("Obteniendo bancos...");
     this.bancosService.obtenerBancos().subscribe({
       next: (resp: any) => {
         this.bancos = resp.data.map((banco: any) => ({
           ...banco,
           class: banco.name === 'ADDI' ? 'bg-c-blue-addi' : banco.name === 'SISTECREDITO'? 'bg-c-yellow-siste': banco.balance > 0 ? 'bg-c-green order-card' :  'bg-c-red order-card'
         }));
-        console.log("Bancos obtenidos:", this.bancos);
       },
       error: (error: any) => {
-        console.log(error);
+        console.error(error);
       }
     });
   }

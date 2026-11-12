@@ -9,7 +9,6 @@ export class GraficaService {
   constructor() { }
 
   crearGraficaSemanaASemana(ordenesCompras: any[], abonos: any[]) {
-    console.log(ordenesCompras, abonos)
     const hoy = new Date()
     const ordenesCompraMes = [0, 0, 0, 0]
     const abonosMes = [0, 0, 0, 0]

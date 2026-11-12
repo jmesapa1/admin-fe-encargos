@@ -54,9 +54,7 @@ export class ConsolidarCargaComponent {
 
   // solo traera pedidos sin consolidar, con fecha mayor a 01 de diciembre del 2025 y ya comprados
   obtenerPedidosSinConsolidar() {
-    console.log("obtenerPedidosSinConsolidar");
     return this.comprasService.obtenerPedidosSinConsolidar().subscribe((pedidos: any) => {
-      console.log(pedidos);
       this.pedidosSinConsolidar = of(pedidos)
       this.pedidosSinConsolidar = of(pedidos.filter((pedido: any) => {
         return pedido.trackingCompra !== 'Entregado cliente' && pedido.trackingCompra !== 'Espera de despacho' ;
@@ -94,19 +92,15 @@ export class ConsolidarCargaComponent {
 
     if (index > -1 && !event.target.checked) {
       this.pedidosSeleccionados.splice(index, 1);
-      console.log(this.pedidosSeleccionados);
 
       return;
     } else {
       this.pedidosSeleccionados.push(pedido);
-      console.log(this.pedidosSeleccionados);
     }
   }
 
   consolidarPedido(){
-    console.log("consolidarPedido");
-    this.comprasService.consolidarPedidos(this.pedidosSeleccionados, this.pagoForm.value).subscribe((response: any) => {
-      console.log(response);
+    this.comprasService.consolidarPedidos(this.pedidosSeleccionados, this.pagoForm.value).subscribe(() => {
       this.activeModal.close('Consolidacion exitosa');
     });
   }

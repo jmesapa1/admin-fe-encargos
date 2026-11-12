@@ -48,11 +48,8 @@ export class GenerarNovedadComponent {
       fecha: this.getFechaActual(),
     };
 
-    console.log("Novedad a agregar:", novedadData);
-
     this.pedidoService.agregarNovedad(novedadData).subscribe({
-      next: (response) => {
-        console.log("Novedad agregada con éxito:", response);
+      next: () => {
         this.activeModal.close('Novedad agregada');
       },
       error: (error) => {

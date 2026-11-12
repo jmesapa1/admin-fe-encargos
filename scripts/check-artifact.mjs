@@ -34,8 +34,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
     if (unsafe.length) {
       console.error(`Artifact rejected: ${unsafe.length} forbidden file(s). Contents and paths omitted.`);
       process.exitCode = 1;
-    } else {
-      console.log('Artifact security check passed.');
     }
   } catch {
     console.error('Artifact security check failed: build directory missing or unreadable.');

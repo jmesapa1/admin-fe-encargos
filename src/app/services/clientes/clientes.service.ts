@@ -13,13 +13,6 @@ export class ClientesService {
 
 
   obtenerClientes() {
-    this.http.get<any[]>(environment.apiUrl+"app/clientes").subscribe({
-      next: (data:any) => {
-        console.log(data)
-      },
-      error: (error:any) => {
-        console.log(error)
-      },
-    });
+    this.http.get<any[]>(environment.apiUrl+"app/clientes").subscribe();
   }
 }
