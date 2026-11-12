@@ -10,7 +10,11 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "lint-fix": "ng lint --fix"
+    "lint-fix": "ng lint --fix",
+    "test:security": "node --test scripts/security.test.mjs",
+    "check:artifact": "node scripts/check-artifact.mjs",
+    "postbuild": "npm run check:artifact",
+    "postbuild-prod": "npm run check:artifact"
   },
   "private": true,
   "dependencies": {

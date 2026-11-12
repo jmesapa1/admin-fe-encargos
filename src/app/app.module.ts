@@ -26,13 +26,13 @@ import { SharedModule } from './theme/shared/shared.module';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getDatabase, provideDatabase } from '@angular/fire/database';
+
 
 
 import { AngularFireModule } from "@angular/fire/compat";
-import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { AngularFireDatabaseModule, USE_EMULATOR } from '@angular/fire/compat/database';
 import { NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { connectFirestoreEmulator, getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { NgxLoadingModule } from 'ngx-loading';
 import { NgxUiLoaderConfig, NgxUiLoaderModule, PB_DIRECTION, POSITION, SPINNER } from 'ngx-ui-loader';
 import { LoadingInterceptor } from './interceptors/loader-intercpetor.interceptor';
@@ -72,9 +72,16 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     ,
   ],
   providers: [provideHttpClient(),
-    provideFirestore(() => getFirestore()),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      if (environment.useEmulators) {
+        connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+      }
+      return firestore;
+    }),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
-    provideDatabase(() => getDatabase()),NgbDropdownConfig,
+    { provide: USE_EMULATOR, useValue: environment.useEmulators ? ['127.0.0.1', 9000] : undefined },
+    NgbDropdownConfig,
     provideHttpClient(
       withInterceptorsFromDi(),
     ),
