@@ -46,7 +46,6 @@ export class FilterableTable {
 				tap(() => this._loading$.next(false))
 			)
 			.subscribe((result) => {
-				console.log("result", result)
 				this._displayedResults$.next(result.countries);
 				this._total$.next(result.total);
 			});
@@ -95,7 +94,6 @@ export class FilterableTable {
 	}
 
 	sort(apiResp: any[], column: string, direction: string): any[] {
-		console.log(`sourting on column ${column}`);
 		if (direction === '') {
 			return apiResp;
 		} else {
@@ -137,7 +135,6 @@ export class FilterableTable {
 
 		// 1. sort
 		let countries = this.sort(this.allValues, sortColumn, sortDirection);
-		console.log(this.allValues, sortColumn, sortDirection)
 		// 2. filter
 		countries = countries.filter((country) => this.matches(country, searchTerm));
 
@@ -147,7 +144,6 @@ export class FilterableTable {
 		// 3. paginate
 		countries = countries.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
 
-		console.log(countries,searchTerm)
 		return of({ countries, total });
 	}
 

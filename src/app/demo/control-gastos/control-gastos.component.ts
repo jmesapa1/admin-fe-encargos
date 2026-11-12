@@ -87,7 +87,6 @@ fechafin=''
         this.totalPagosDomicilio = pagos.filter(x=>x.idConcepto==="5296").reduce((acc, pago) => acc + pago.valor, 0);
         this.totalPagosCaja = pagos.filter(x=>x.idConcepto==="5298").reduce((acc, pago) => acc + pago.valor, 0);
         this.totalGastosVarios = pagos.filter(x=>x.idConcepto==="5299").reduce((acc, pago) => acc + pago.valor, 0);
-        console.log(pagos)
         this.totalGastosJulian = pagos.filter(x=>x.idConcepto==="5300").reduce((acc, pago) => acc + pago.valor, 0);
 
         this.tipoGastos = this.tipoGastos.map(gasto => {
@@ -114,11 +113,6 @@ fechafin=''
     if (gasto) {
       modal.componentInstance.tipoGasto = gasto
     }
-    modal.result.then((data: any) => {
-      console.log(data)
-      if (data.success) {
-      }
-    })
   }
 
 }

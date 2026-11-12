@@ -1,3 +1,4 @@
+@if ((auth.state$ | async)?.status === 'authorized') {
 <app-navigation
   class="pcoded-navbar menupos-fixed menu-light"
   [ngClass]="{
@@ -27,3 +28,5 @@
   <div class="pc-menu-overlay" (click)="closeMenu()" (keydown)="handleKeyDown($event)" tabindex="0"></div>
 </div>
 <app-configuration></app-configuration>
+
+}

@@ -38,7 +38,6 @@ export class ResumenPedidosSeleccionadosComponent {
   }
 
   ngOnInit() {
-    console.log(this.pedidos);
     this.obtenerProductos()
   }
 
@@ -49,11 +48,9 @@ export class ResumenPedidosSeleccionadosComponent {
   obtenerProductos() {
     for (let pedido of this.pedidos) {
       this.pedidoService.obtenerDetalleProducto(pedido.pedido.items[0].id).subscribe(resp => {
-        console.log(resp)
         pedido.infoProducto = resp.data
       })
     }
-    console.log(this.pedidos);
   }
 
 
@@ -128,7 +125,6 @@ pdf.autoPrint();
 
 
 }
-
 
 
 

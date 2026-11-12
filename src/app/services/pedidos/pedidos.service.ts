@@ -27,7 +27,6 @@ export class PedidosService {
         fechainicio =   formatDate(fechainicio, 'yyyy-MM-dd', 'en-US');
 
         let fechafin =   formatDate(new Date(date.getFullYear(), date.getMonth() + 1, date.getDate()), 'yyyy-MM-dd', 'en-US');
-        console.log("fechas->",fechainicio,fechafin)
         let coleccion = collection(this.firestore, 'pedidos');
         const orderedQueryAsc = query(coleccion, orderBy("fecha","desc"),where('fecha', '>=', fechainicio),where('fecha', '<=', fechafin));
 
@@ -47,25 +46,11 @@ export class PedidosService {
     }
 
   obtenerPedidos() {
-    this.http.get<Factura[]>(environment.apiUrl+"app/pedidos").subscribe({
-      next: (data) => {
-        console.log(data)
-      },
-      error: (error) => {
-        console.log(error)
-      },
-    });
+    this.http.get<Factura[]>(environment.apiUrl+"app/pedidos").subscribe();
   }
 
   obtenerCompras() {
-    this.http.get<Factura[]>(environment.apiUrl+"app/compras").subscribe({
-      next: (data) => {
-        console.log(data)
-      },
-      error: (error) => {
-        console.log(error)
-      },
-    });
+    this.http.get<Factura[]>(environment.apiUrl+"app/compras").subscribe();
   }
 
   asignarCompra(idCompra:string,idFactura:string) {
@@ -84,25 +69,11 @@ export class PedidosService {
    return this.http.post<any[]>(environment.apiUrl+"app/pedidos/estado-compra",{trackingCompra:estado,idFactura})
   }
   cambiarEstadoVenta(estado:string,idFactura:string){
-    this.http.post<Factura[]>(environment.apiUrl+"app/pedidos/estado-venta",{estadoVenta:estado,idFactura}).subscribe({
-      next: (data) => {
-        console.log(data)
-      },
-      error: (error) => {
-        console.log(error)
-      },
-    });
+    this.http.post<Factura[]>(environment.apiUrl+"app/pedidos/estado-venta",{estadoVenta:estado,idFactura}).subscribe();
   }
 
   cambiarFechaEntrega(fecha:string,idFactura:string){
-    this.http.post<Factura[]>(environment.apiUrl+"app/pedidos/fecha-entrega-compra",{entregaCompraEstimada:fecha,idFactura}).subscribe({
-      next: (data) => {
-        console.log(data)
-      },
-      error: (error) => {
-        console.log(error)
-      },
-    });
+    this.http.post<Factura[]>(environment.apiUrl+"app/pedidos/fecha-entrega-compra",{entregaCompraEstimada:fecha,idFactura}).subscribe();
   }
 
   pagarSaldoFacturaCompra(data: any){

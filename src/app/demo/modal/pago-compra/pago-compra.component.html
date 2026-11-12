@@ -33,6 +33,7 @@
     </div>
   </div>
 </div>
+<p class="px-3" role="status" *ngIf="envio.enviando">Procesando pago…</p>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
   <button type="button" class="btn btn-primary" [disabled]="this.pagoForm.invalid" (click)="agregarPago()">Abonar</button>

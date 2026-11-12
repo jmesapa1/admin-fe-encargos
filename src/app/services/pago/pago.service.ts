@@ -10,14 +10,7 @@ export class PagoService {
   constructor(private http: HttpClient) { }
 
   obtenerPagos() {
-    this.http.get<any[]>(environment.apiUrl + "app/pagos").subscribe({
-      next: (data: any) => {
-        console.log(data)
-      },
-      error: (error: any) => {
-        console.log(error)
-      },
-    });
+    this.http.get<any[]>(environment.apiUrl + "app/pagos").subscribe();
   }
 
 

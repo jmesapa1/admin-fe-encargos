@@ -17,14 +17,22 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": ["bezier-easing", "mousetrap", "apexcharts"],
+            "allowedCommonJsDependencies": ["bezier-easing", "mousetrap", "apexcharts", "sweetalert2"],
             "outputPath": "dist/los-encargos-de-salomon-79854",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": ["**/*.json"]
+              }
+            ],
             "styles": ["src/styles.scss"],
             "scripts": ["node_modules/apexcharts/dist/apexcharts.min.js"]
           },
@@ -51,6 +59,9 @@
               "outputHashing": "all"
             },
             "development": {
+              "fileReplacements": [
+                { "replace": "src/environments/environment.ts", "with": "src/environments/environment.development.ts" }
+              ],
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -86,8 +97,19 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "fileReplacements": [
+              { "replace": "src/environments/environment.ts", "with": "src/environments/environment.development.ts" }
+            ],
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "assets",
+                "ignore": ["**/*.json"]
+              }
+            ],
             "styles": ["src/styles.scss"],
             "scripts": []
           }

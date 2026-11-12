@@ -10,7 +10,15 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "lint-fix": "ng lint --fix"
+    "lint-fix": "ng lint --fix",
+    "test:security": "node --test scripts/security.test.mjs",
+    "check:artifact": "node scripts/check-artifact.mjs",
+    "postbuild": "npm run check:artifact",
+    "postbuild-prod": "npm run check:artifact",
+    "test:regression": "ng test --main src/regression-test.ts --ts-config tsconfig.regression.json --watch=false --browsers=ChromeHeadless --include=src/app/regression/stabilization.spec.ts --include=src/app/interceptors/loader-intercpetor.interceptor.spec.ts",
+    "test:auth": "ng test --main src/auth-test.ts --ts-config tsconfig.auth.json --include=src/app/auth/*.spec.ts --watch=false --browsers=ChromeHeadless",
+    "emulators:auth": "firebase emulators:start --only auth --project demo-leds-local --config firebase.auth.local.json",
+    "test:auth:local": "firebase emulators:exec --only auth --project demo-leds-local --config firebase.auth.local.json \"npm run test:auth\""
   },
   "private": true,
   "dependencies": {
@@ -45,6 +53,7 @@
     "ngx-scrollbar": "^15.0.1",
     "ngx-ui-loader": "^13.0.0",
     "rxjs": "~7.8.1",
+    "sweetalert2": "^11.26.25",
     "tslib": "^2.6.3",
     "zone.js": "~0.14.7"
   },

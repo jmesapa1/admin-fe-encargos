@@ -23,7 +23,6 @@ export class DetallePedidoComponent {
 	}
 	obtenerProducto() {
 		this.pedidoService.obtenerDetalleProducto(this.pedido.pedido.items[0].id).subscribe(resp => {
-			console.log(resp)
 			this.infoProducto = resp.data
 		})
 	}
@@ -31,7 +30,6 @@ export class DetallePedidoComponent {
 	ngOnInit() {
 		this.obtenerProducto()
 
-		console.log(this.pedido)
 	}
 
 	private getDismissReason(reason: any): string {
