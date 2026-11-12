@@ -28,7 +28,9 @@ export class NavContentComponent implements OnInit {
     private locationStrategy: LocationStrategy
   ) {
     this.windowWidth = window.innerWidth;
-    this.navigations = NavigationItems;
+    this.navigations = NavigationItems.filter(item => item.id !== 'Authentication').map(item => ({
+      ...item, children: item.children?.filter(child => child.url !== '/auth/signup')
+    }));
   }
 
   // life cycle event

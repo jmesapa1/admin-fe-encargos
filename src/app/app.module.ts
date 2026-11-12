@@ -26,6 +26,7 @@ import { SharedModule } from './theme/shared/shared.module';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { provideAuth, getAuth, connectAuthEmulator } from '@angular/fire/auth';
 
 
 
@@ -72,6 +73,13 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     ,
   ],
   providers: [provideHttpClient(),
+    provideAuth(() => {
+      const auth = getAuth();
+      if (environment.useEmulators) {
+        connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+      }
+      return auth;
+    }),
     provideFirestore(() => {
       const firestore = getFirestore();
       if (environment.useEmulators) {

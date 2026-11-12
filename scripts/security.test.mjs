@@ -18,7 +18,11 @@ test('build and Karma exclude JSON assets; Hosting independently excludes them',
 });
 
 test('local Firebase configuration targets a demo project and loopback API', () => {
-  const local = read('src/environments/environment.ts');
+  const local = read('src/environments/environment.development.ts');
+  const architect = JSON.parse(read('angular.json')).projects.skeleton.architect;
+  for (const replacements of [architect.build.configurations.development.fileReplacements, architect.test.options.fileReplacements]) {
+    assert.ok(replacements.some(r => r.replace === 'src/environments/environment.ts' && r.with === 'src/environments/environment.development.ts'));
+  }
   assert.ok(/production:\s*false/.test(local));
   assert.ok(/useEmulators:\s*true/.test(local));
   assert.ok(/projectId:\s*'demo-leds-local'/.test(local));

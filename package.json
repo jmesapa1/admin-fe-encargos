@@ -15,7 +15,10 @@
     "check:artifact": "node scripts/check-artifact.mjs",
     "postbuild": "npm run check:artifact",
     "postbuild-prod": "npm run check:artifact",
-    "test:regression": "ng test --main src/regression-test.ts --ts-config tsconfig.regression.json --watch=false --browsers=ChromeHeadless --include=src/app/regression/stabilization.spec.ts --include=src/app/interceptors/loader-intercpetor.interceptor.spec.ts"
+    "test:regression": "ng test --main src/regression-test.ts --ts-config tsconfig.regression.json --watch=false --browsers=ChromeHeadless --include=src/app/regression/stabilization.spec.ts --include=src/app/interceptors/loader-intercpetor.interceptor.spec.ts",
+    "test:auth": "ng test --main src/auth-test.ts --ts-config tsconfig.auth.json --include=src/app/auth/*.spec.ts --watch=false --browsers=ChromeHeadless",
+    "emulators:auth": "firebase emulators:start --only auth --project demo-leds-local --config firebase.auth.local.json",
+    "test:auth:local": "firebase emulators:exec --only auth --project demo-leds-local --config firebase.auth.local.json \"npm run test:auth\""
   },
   "private": true,
   "dependencies": {

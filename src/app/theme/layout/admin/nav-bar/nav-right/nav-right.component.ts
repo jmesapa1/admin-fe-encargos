@@ -1,5 +1,6 @@
+import { AuthService } from 'src/app/auth/auth.service';
 // Angular Import
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 // bootstrap
@@ -25,6 +26,18 @@ import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
   ]
 })
 export class NavRightComponent {
+  private readonly auth = inject(AuthService);
+  signingOut = false;
+  logoutError = '';
+  async logout(): Promise<void> {
+    if (this.signingOut) return;
+    this.signingOut = true;
+    this.logoutError = '';
+    try { await this.auth.signOut(); }
+    catch { this.logoutError = 'No se pudo completar el cierre de sesión.'; }
+    finally { this.signingOut = false; }
+  }
+
   // public props
   visibleUserList: boolean;
   chatMessage: boolean;

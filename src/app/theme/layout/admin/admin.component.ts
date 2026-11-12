@@ -1,5 +1,6 @@
+import { AuthService } from 'src/app/auth/auth.service';
 // Angular Import
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, inject } from '@angular/core';
 import { Location, LocationStrategy } from '@angular/common';
 
 @Component({
@@ -8,6 +9,7 @@ import { Location, LocationStrategy } from '@angular/common';
   styleUrls: ['./admin.component.scss']
 })
 export class AdminComponent {
+  readonly auth = inject(AuthService);
   // public props
   navCollapsed!: boolean;
   navCollapsedMob: boolean;
