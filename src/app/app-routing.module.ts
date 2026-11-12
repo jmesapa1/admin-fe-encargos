@@ -39,6 +39,10 @@ const routes: Routes = [
       {
         path: 'pedidos',
         loadComponent: () => import('./demo/pedidos/pedidos.component')
+      },
+      {
+        path: 'control-gastos',
+        loadComponent: () => import('./demo/control-gastos/control-gastos.component')
       }
     ]
   },
@@ -48,7 +52,8 @@ const routes: Routes = [
     children: [
       {
         path: 'auth/signup',
-        loadComponent: () => import('./demo/authentication/sign-up/sign-up.component')
+        loadComponent: () => import('./demo/authentication/sign-up/sign-up.component'),
+
       },
       {
         path: 'auth/signin',

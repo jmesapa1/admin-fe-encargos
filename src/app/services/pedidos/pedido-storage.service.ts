@@ -18,7 +18,7 @@ export class PedidoStorageService {
   }
 
   obtenerPedidos(): Observable<any> {
-    return this.http.get<any[]>(environment.apiUrl+"pedidos-data")
+    return this.http.get<any[]>(environment.apiUrl+"app/pedidos-data")
   }
 
   obtenerPedidosPorMes(pedidos:any[]){
@@ -37,4 +37,6 @@ export class PedidoStorageService {
       }
     }, 0)
   }
+
+
 }

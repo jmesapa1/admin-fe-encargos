@@ -1,54 +1,162 @@
-<div class="modal-header">
-    <h4 class="modal-title">Pedido número {{pedido.id}}</h4>
-    <button type="button" class="btn-close" aria-label="Close"  (click)="activeModal.close('Close click')"></button>
+<div class="modal-header" style="background: black;">
+  <h4 class="modal-title mb-0" style="color: white;">Pedido {{pedido.id}} - {{pedido.cliente.name}}<img
+      src="assets/images/instagram.webp" *ngIf="pedido.origenCliente==='Instagram'" style="width: 30px;"><img
+      src="assets/images/whatsapp.png" *ngIf="pedido.origenCliente==='Whatsapp'" style="width:25px;">
+    <span class="mb-0">
+      @if(pedido.cedulaCliente){
+      <p class="mb-0"><b>CC.</b> {{pedido.cedulaCliente}}</p>
+      }
+    </span>
+    @if(pedido.cliente && pedido.cliente.mobile){
+    <p  class="mb-0">CEL: {{pedido.cliente.mobile}}</p>
+    }
+  </h4>
+
+  <button type="button" class="btn-close" style="color:white" aria-label="Close"
+    (click)="activeModal.close('Close click')"></button>
 </div>
 <div class="modal-body">
-    <div class="row">
-        <div class="col">
-            <h3>
-                Cliente
-            </h3>
-            <p>{{pedido.cliente.name}}</p>
-            <h3>
-                Whatsapp
-            </h3>
-            <p>{{pedido.cliente.mobile}}</p>
-        </div>
-        <div class="col">
-            <h3>
-                Saldo 
-            </h3>
-            <p>${{pedido.pedido.balance | number}}</p>
-        </div>
-    </div>
+  <div class="row">
 
-    <hr>
-    <div class="row">
-        <div class="col">
-            <h3>
-                Producto
-            </h3>
-            <p>{{pedido.pedido.items[0].name}}</p>
-        </div>
-        <div class="col">
-            <h3>
-                Imagen
-            </h3>
-            @if(infoProducto && infoProducto.images && infoProducto.images.length>0){
-                <p><img style="max-width: 200px;" src="{{infoProducto?.images[0]?.url}}"> </p>
-            }@else {
-                <p>No existe foto</p>
-            }
-        </div>
+    <div class="col-md-6">
+      <h4>
+        Producto
+      </h4>
+      @if(infoProducto && infoProducto.images && infoProducto.images.length>0){
+      <p><img style="max-width: 100px;" src="{{infoProducto?.images[0]?.url}}"> </p>
+      }@else {
+      <p>No existe foto</p>
+      }
+      <p>{{pedido.pedido.items[0].name}}</p>
     </div>
-    
+    <div class="col-md-6">
+      <h4>Saldo: ${{pedido.pedido.balance | number}}</h4>
+      <h5>Pagos: <span *ngIf="pedido?.pago.length===0">$0</span>
+        @for(pago of pedido?.pago; track pago?.id) {
+        <span class="badge badge-pill badge-primary" style="font-size: 10px !important;">
+          <img *ngIf="pago.formaPago==='SISTECREDITO'" style="max-width: 90px;"
+            src="assets/images/sistecredito-logo.png">
+          <img *ngIf="pago.formaPago==='ADDI'" style="max-width: 70px;" src="assets/images/addi-logo.png">
+          <img *ngIf="pago.formaPago!=='ADDI' && pago.formaPago!=='SISTECREDITO'" style="max-width: 50px;"
+            src="assets/images/efectivo.png">
+
+          : <b class="text-black">${{pago.valor | number}}</b>
+        </span>
+
+
+        }
+      </h5>
+
+
+    </div>
+  </div>
+  <hr>
+  <h4>Pedidos por entregar</h4>
+  <table class="table table-main table-striped table-hover m-b-0 mt-1">
+    <thead>
+
+      <tr>
+        <th scope="col" sortable=id>
+          <span>
+            Id
+
+          </span>
+        </th>
+        <th scope="col" sortable=producto>
+          <span>
+            Producto
+
+          </span>
+        </th>
+        <th scope="col" sortable=fecha>
+          <span>
+            Fecha pedido
+
+          </span>
+        </th>
+        <th scope="col" sortable=valor>
+          <span>
+            Valor venta
+
+          </span>
+        </th>
+
+        <th scope="col" sortable=saldoCompra>
+          <span>
+            Saldo venta
+
+          </span>
+
+        <th scope="col" sortable=saldoCompra>
+          <span>
+            Pagos
+          </span>
+        </th>
+
+        <th scope="col" sortable=estadoCompra>
+          <span>
+            Estado compra
+
+          </span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (pedido of pedido.pedidosPorEntregar ; track pedido?.id) {
+      <tr [ngClass]="pedido.color">
+        <td style="font-size: 10px !important;color: white;">{{ pedido.id}}</td>
+        <td >{{ pedido.pedido?.items[0].name}}</td>
+        <td >{{ pedido.pedido.date | date:"dd-MM-YYYY"}}</td>
+        <td >${{ pedido.pedido.total | number }}</td>
+        <td ><b>${{ pedido.saldo | number }}</b></td>
+        <td>
+          @if(pedido?.pago && pedido?.pago.length>0){
+          @for(pago of pedido?.pago; track pago?.id) {
+          <span class="badge badge-pill badge-primary" style="font-size: 10px !important;">
+            <img *ngIf="pago.formaPago==='SISTECREDITO'" style="max-width: 90px;"
+              src="assets/images/sistecredito-logo.png">
+            <img *ngIf="pago.formaPago==='ADDI'" style="max-width: 70px;" src="assets/images/addi-logo.png">
+            <img *ngIf="pago.formaPago!=='ADDI' && pago.formaPago!=='SISTECREDITO'" style="max-width: 50px;"
+              src="assets/images/efectivo.png">
+            : <b >${{pago.valor | number}}</b>
+          </span>
+          }
+          }@else{
+          <b class="text-black">SIN PAGAR</b>
+          }
+        </td>
+
+        <td>
+          {{pedido.estadoCompra}}
+          <i *ngIf="pedido.estadoCompra === 'Comprado' " class="fa fa-check text-c-success" aria-hidden="true"></i>
+          <br>
+          <label for="inlineFormSelectPref" class="sr-only">Preference</label>
+          <div ngbDropdown class="d-inline-block">
+            <span class="badge  estado" [ngClass]="pedido.trackingCompra
+              && pedido.estadoCompra!=='Falta comprar' ? pedido.color :'bg-c-red'
+               " style="box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);" id="dropdownBasic1" ngbDropdownToggle
+              *ngIf="pedido.estadoCompra && pedido.estadoCompra!=='Falta comprar'">{{pedido.trackingCompra
+              && pedido.estadoCompra!=='Falta comprar' ? pedido.trackingCompra :'Sin definir'}}<i
+                *ngIf="!pedido.trackingCompra" class="fa fa-exclamation-triangle text-c-red"
+                aria-hidden="true"></i></span>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+              <button ngbDropdownItem (click)="cambiarEstadoCompra(opcion.name,pedido.id)"
+                *ngFor="let opcion of estadosCompraPedidos">{{opcion.name}}
+              </button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+
 
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Desvincular pedido/compra</button>
+  <button type="button" class="btn btn-outline-primary" (click)="desvincularPedido(pedido.id)">Desvincular
+    pedido/compra</button>
 
-
-    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Abonar a saldo</button>
-
-    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
 </div>

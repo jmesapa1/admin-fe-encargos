@@ -9,11 +9,11 @@ import { environment } from 'src/environments/environment';
 export class ClientesService {
 
   constructor(private http: HttpClient) { }
-    
-  
+
+
 
   obtenerClientes() {
-    this.http.get<any[]>(environment.apiUrl+"clientes").subscribe({
+    this.http.get<any[]>(environment.apiUrl+"app/clientes").subscribe({
       next: (data:any) => {
         console.log(data)
       },

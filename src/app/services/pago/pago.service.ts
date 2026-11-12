@@ -10,7 +10,7 @@ export class PagoService {
   constructor(private http: HttpClient) { }
 
   obtenerPagos() {
-    this.http.get<any[]>(environment.apiUrl + "pagos").subscribe({
+    this.http.get<any[]>(environment.apiUrl + "app/pagos").subscribe({
       next: (data: any) => {
         console.log(data)
       },
@@ -21,90 +21,40 @@ export class PagoService {
   }
 
 
-   abonarFacturaPedido(data: any){
-      return this.http.post<any>(environment.apiUrl+"pedidos/pagar/factura",{...data})
-    }
+  abonarFacturaPedido(data: any) {
+    return this.http.post<any>(environment.apiUrl + "app/pedidos/pagar/factura", { ...data })
+  }
+
+  obtenerProvedores() {
+    return this.http.get<any>(environment.apiUrl + "app/provedores")
+  }
 
   agregarEgreso(formValue: any) {
-    let idConcepto
-    let pagoGastoRecurrente = true;
-    if (formValue.concepto === "5208") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "DOMICILIO"
-      pagoGastoRecurrente=false
-    }else  if (formValue.concepto === "5203") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "SERVICIOS PUBLICOS - AGUA LEDS"
-    }else  if (formValue.concepto === "5224") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "ALEGRA"
-      pagoGastoRecurrente=false
-    }else  if (formValue.concepto === "5108") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "SALARIO"
-    }else  if (formValue.concepto === "5236") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "BOLSAS, MARCADORES, CINTA, ETC."
-      pagoGastoRecurrente=false
-    }else  if (formValue.concepto === "5246") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "CHAVA"
-    }else  if (formValue.concepto === "5165") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "DIEGO"
-    }else  if (formValue.concepto === "5209") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "APARTAMENTO PELDAR"
-    }else  if (formValue.concepto === "5160") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "SALARIO TRABAJADORA"
-    }else  if (formValue.concepto === "5238") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "SALARIO JULIAN"
-    }else  if (formValue.concepto === "5247") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "TARJETA CRÉDITO NU"
-    }else  if (formValue.concepto === "5250") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "TARJETA CRÉDITO AMEX"
-    }else  if (formValue.concepto === "5251") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "TARJETA CRÉDITO POPULAR"
-    }else  if (formValue.concepto === "5252") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "TARJETA CRÉDITO RAPPI"
-    }else  if (formValue.concepto === "5253") {
-      idConcepto = Number(formValue.concepto)
-      formValue.concepto = "DAVIVIENDA"
-    }
-
     let params = new HttpParams();
-    params = params.append('pagoRecurrente', pagoGastoRecurrente);
-
 
     let request = {
       "bankAccount": {
-        "id": 2
+        "id": formValue.idMedioPago
       },
       "paymentMethod": "transfer",
-      "observations": formValue.concepto,
-      "anotation": formValue.concepto,
+      "observations": formValue.descripcion,
+      "anotation": formValue.descripcion,
       "comments": [
         formValue.concepto
       ],
       "type": "out",
       "categories": [
         {
-          "id": idConcepto,
+          "id": formValue.idConcepto,
           "quantity": 1,
           "price": formValue.valor,
-          "observations": formValue.concepto
+          "observations": formValue.descripcion
         }
       ],
       "date": formValue.fecha
     }
 
-    return this.http.post<any[]>(environment.apiUrl + "pagos/gasto", request,{params:params})
+    return this.http.post<any[]>(environment.apiUrl + "app/pagos/gasto", request, { params: params })
   }
 
 }

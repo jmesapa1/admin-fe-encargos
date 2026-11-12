@@ -1,0 +1,98 @@
+<div class="modal-header">
+  <h4 class="modal-title">Consolidado de mercancia</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="pagoForm">
+
+        <div class="form-group row">
+          <label for="inputValor" class="col-sm-3 col-form-label">GUIA</label>
+          <div class="col-sm-9">
+            <input required type="text" formControlName="guia" class="form-control" id="inputValor"
+              placeholder="Ingresar guia asignada" />
+          </div>
+        </div>
+        <h3>Productos</h3>
+        <div class="form-group row">
+          <table class="table table-main table-hover m-b-0" style=" width: 100%;table-layout: fixed;">
+            <thead>
+              <tr>
+                <th>
+                  Fecha pedido
+                </th>
+                <th>
+                  Cliente
+                </th>
+                <th>
+                  Producto
+                </th>
+                <th>
+                  Provedor
+                </th>
+                <th>
+                  Consolidar
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(pedido of pedidosSinConsolidar | async; track pedido.id) {
+              <tr>
+                <td>{{pedido.fecha}}</td>
+                <td>{{pedido.cliente.name}}</td>
+                <td>{{pedido.pedido.items[0].name}}</td>
+                <td>{{pedido?.compraData?.compra?.provider.name}}
+                  @if(pedido?.compraData){
+                  @if(pedido?.compraData?.compra?.provider?.id === '145'){
+                  <img src="assets/images/amazon.png" style="max-width: 30px">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'GUESS' ||
+                  pedido.compraData.compra.provider.name === 'SHOP PREMIUM OUTLET'){
+                  <img src="assets/images/guess.png" style="max-width: 30px">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'MICHAEL KORS'){
+                  <img src="assets/images/michael-kors.png" style="max-width: 40px">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'NIKE'){
+                  <img src="assets/images/nike.png" style="max-width: 30px; max-height: 50px;">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'NORDSTROM RACK'){
+                  <img src="assets/images/nordstrom-rack.png" style="max-width: 30px; max-height: 50px;">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'ADIDAS'){
+                  <img src="assets/images/adidas.png" style="max-width: 30px; max-height: 50px;">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'PUMA'){
+                  <img src="assets/images/puma.png" style="max-width: 50px; max-height: 50px;">
+
+                  }@else if(pedido?.compraData?.compra?.provider?.name === 'MACYS'){
+                  <img src="assets/images/macys.png" style="max-width: 50px;">
+
+                  }
+                  }
+                </td>
+                <td>
+                  <div class="form-group">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="gridCheck" (click)="onCheckboxClick(pedido, $event)"  style="width: 25px; height: 25px;margin: auto;" />
+                    </div>
+                  </div>
+                </td>
+
+              </tr>
+              }
+
+            </tbody>
+
+          </table>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+  <button type="button" class="btn btn-outline-secondary" [disabled]="pagoForm.invalid || pedidosSeleccionados.length === 0" (click)="consolidarPedido()">Consolidar</button>
+
+</div>

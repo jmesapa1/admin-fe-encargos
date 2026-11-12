@@ -1,13 +1,13 @@
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Component, inject, Input, signal, TemplateRef, WritableSignal } from '@angular/core';
 
-import { ModalDismissReasons, NgbActiveModal, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalDismissReasons, NgbActiveModal, NgbDatepickerModule, NgbDropdownModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
 
 @Component({
 	selector: 'app-detalle-pedido',
 	standalone: true,
-	imports: [DecimalPipe, CommonModule],
+	imports: [DecimalPipe, CommonModule,NgbDropdownModule,],
 	templateUrl: './detalle-pedido.component.html',
 	styleUrl: './detalle-pedido.component.scss'
 })
@@ -16,6 +16,7 @@ export class DetallePedidoComponent {
 	infoProducto: any
 	private modalService = inject(NgbModal);
 	closeResult: WritableSignal<string> = signal('');
+  estadosCompraPedidos = [{ color: "bg-c-blue", name: "En camino a MED" }, { color: "bg-c-blue", name: "En camino USA" }, { color: "bg-c-purple", name: "Entregado a USA" }, { color: "bg-c-yellow", name: "Espera de despacho" }, { color: "bg-c-green", name: "Entregado cliente" }]
 
 	activeModal = inject(NgbActiveModal);
 	constructor(private pedidoService: PedidosService) {
@@ -43,4 +44,19 @@ export class DetallePedidoComponent {
 				return `with: ${reason}`;
 		}
 	}
+
+  cambiarEstadoCompra(estado: string, idFactura: string) {
+    this.pedidoService.cambiarEstadoCompra(estado, idFactura)
+  }
+
+  desvincularPedido(idFactura: string) {
+    this.pedidoService.desvincularPedido(idFactura).subscribe({
+      next: (data) => {
+        this.activeModal.close('desvinculado');
+      },
+      error: (error) => {
+        console.error('Error al desvincular pedido:', error);
+      }
+    });
+  }
 }

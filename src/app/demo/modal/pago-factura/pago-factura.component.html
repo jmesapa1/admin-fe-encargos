@@ -3,7 +3,7 @@
   <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
 </div>
 <div class="modal-body">
-  <h4><b>Cliente:</b>{{pedido.clienteNombre}}</h4>
+  <h4><b>Cliente: </b>{{pedido.clienteNombre}}</h4>
   <div class="row">
     <div class="col-md-12">
       <form [formGroup]="pagoForm">
@@ -12,7 +12,8 @@
           <div class="col-sm-9">
             <select formControlName="idMedioPago" class="form-control" id="inputValor" placeholder="Ingresar valor">
               <option value="" selected="true" disabled="disabled">Seleccione una opción</option>
-              <option value="2">Transferencia</option>
+              <option value="2">BANCOLOMBIA</option>
+              <option value="17">NEQUI</option>
               <option value="15">SISTECREDITO</option>
               <option value="5">ADDI</option>
             </select>

@@ -1,0 +1,60 @@
+<div class="modal-header">
+  <h4 class="modal-title">Consolidado de mercancia</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12" >
+      <ul class="list-group" id="printcontent">
+        <li class="list-group-item" *ngFor="let pedido of pedidos">
+          <div class="row">
+            <div class="col-md-3">
+
+               @if(pedido.totalPedidosPorEntregar>1){
+            <h4>X {{ pedido.totalPedidosPorEntregar}}</h4>
+            }@else{
+               <h5>LISTO PARA ENTREGAR</h5>
+            }
+            </div>
+            <div class="col-md-5">
+              <h3><b>{{ pedido.cliente.name }}</b></h3>
+              <p>{{ pedido.pedido.items[0].name}}</p>
+              <p><b>Fecha:</b>{{ pedido.fecha }}</p>
+            </div>
+
+            <div class="col-md-3">
+              <h4><b>Saldo:</b> ${{ pedido.saldo | number}}</h4>
+
+              @if(pedido?.pago && pedido?.pago.length>0){
+                <h5>Abonos:</h5>
+                @for(pago of pedido?.pago; track pago?.id) {
+                <span class="badge badge-pill badge-primary" style="font-size: 10px !important;">
+                  <img *ngIf="pago.formaPago==='SISTECREDITO'" style="max-width: 90px;"
+                    src="assets/images/sistecredito-logo.png">
+                  <img *ngIf="pago.formaPago==='ADDI'" style="max-width: 70px;" src="assets/images/addi-logo.png">
+                  <img *ngIf="pago.formaPago!=='ADDI' && pago.formaPago!=='SISTECREDITO'" style="max-width: 50px;"
+                    src="assets/images/efectivo.png">
+
+                  : <h5><b class="text-black">${{pago.valor | number}}</b></h5>
+                </span>
+
+                }
+                }@else{
+                <b class="text-black">SIN PAGAR</b>
+                }
+
+            </div>
+
+
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="generarPDF()">Confirmar e
+    imprimir</button>
+
+</div>

@@ -10,7 +10,7 @@ export class GastosService {
   constructor(private http: HttpClient) { }
 
   obtenerGastosFijos(){
-    return this.http.get<any>(environment.apiUrl + "gastos")
+    return this.http.get<any>(environment.apiUrl+"app/gastos")
 
   }
 }

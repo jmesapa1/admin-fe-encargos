@@ -71,7 +71,10 @@ const ngxUiLoaderConfig: NgxUiLoaderConfig = {
     AngularFireDatabaseModule,  DecimalPipe,   NgxUiLoaderModule.forRoot(ngxUiLoaderConfig),CommonModule
     ,
   ],
-  providers: [provideHttpClient(), provideFirestore(() => getFirestore()),provideFirebaseApp(() => initializeApp(environment.firebaseConfig)), provideDatabase(() => getDatabase()),NgbDropdownConfig,
+  providers: [provideHttpClient(),
+    provideFirestore(() => getFirestore()),
+    provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+    provideDatabase(() => getDatabase()),NgbDropdownConfig,
     provideHttpClient(
       withInterceptorsFromDi(),
     ),

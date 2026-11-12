@@ -21,6 +21,11 @@ import { DetallePedidoComponent } from 'src/app/demo/modal/detalle-pedido/detall
 import { AgregarGastoComponent } from 'src/app/demo/modal/agregar-gasto/agregar-gasto.component';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
 import { PagoFacturaComponent } from 'src/app/demo/modal/pago-factura/pago-factura.component';
+import { GenerarFacturaCompraComponent } from 'src/app/demo/modal/generar-factura-compra/generar-factura-compra.component';
+import { PagoCompraComponent } from 'src/app/demo/modal/pago-compra/pago-compra.component';
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
+import { AngularFireModule } from '@angular/fire/compat';
+import { BancosComponent } from 'src/app/components/bancos/bancos.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -44,8 +49,11 @@ import { PagoFacturaComponent } from 'src/app/demo/modal/pago-factura/pago-factu
     DetallePedidoComponent,
     AgregarGastoComponent,
     PagoFacturaComponent,
-    CurrencyMaskModule
-
+    PagoCompraComponent,
+    GenerarFacturaCompraComponent,
+    CurrencyMaskModule,
+    AngularFireModule,
+    AngularFireDatabaseModule,
   ],
   exports: [
     CommonModule,

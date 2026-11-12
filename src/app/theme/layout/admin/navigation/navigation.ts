@@ -40,6 +40,13 @@ export const NavigationItems: NavigationItem[] = [
         icon: 'feather icon-clipboard'
       },
       {
+        id: 'gastos',
+        title: 'Control gastos',
+        type: 'item',
+        url: '/control-gastos',
+        icon: 'feather icon-home'
+      },
+      {
         id: 'calendario',
         title: 'Calendario',
         type: 'item',

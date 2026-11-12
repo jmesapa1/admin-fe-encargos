@@ -1,0 +1,21 @@
+<div class="row">
+  @for (banco of bancos; track banco) {
+  <div class="col-md-6 col-xl-3">
+    <ng-container>
+
+      <app-card [hidHeader]="true" cardClass={{banco.class}} >
+        <h6 class="text-white"><b>{{ banco.name }} </b></h6>
+        <h2 class="text-end text-white">
+          <i *ngIf="!banco.img" class="feather {{ banco.icon }}  float-start"></i>
+          <img class="float-start" style="color:white;width:{{banco.widthImg}}" *ngIf="banco.img" src="{{banco.img}}">
+          <span>{{ banco.balance | number }} </span>
+        </h2>
+        <p class="m-b-0">
+          {{ banco.description }}
+        </p>
+      </app-card>
+    </ng-container>
+  </div>
+    }
+
+  </div>

@@ -1,0 +1,45 @@
+<div class="modal-header">
+  <h4 class="modal-title">Generar factura de compra</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
+</div>
+<div class="modal-body">
+  <h4><b>Cliente: </b>{{pedido?.clienteNombre}}</h4>
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="pagoForm">
+        <div class="form-group row">
+          <label for="inputValor" class="col-sm-3 col-form-label">Proovedor</label>
+          <div class="col-sm-9">
+            <select formControlName="idProvedor" class="form-control" id="inputValor" placeholder="Ingresar valor">
+              <option value="" selected="true" disabled="disabled">Seleccione una opción</option>
+              @for(provedor of provedores; track  provedor.id) {
+                <option value={{provedor.id}} selected="true" >{{provedor.name}}</option>
+              }
+
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputValor" class="col-sm-3 col-form-label">Producto</label>
+          <div class="col-sm-9">
+             <select formControlName="idProducto" class="form-control" id="inputValor" >
+              <option value={{this.pedido.pedido.items[0].id}} selected="true" disabled="disabled">{{this.pedido.pedido.items[0].name}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputValor" class="col-sm-3 col-form-label">Valor de compra</label>
+          <div class="col-sm-9">
+            <input currencyMask [options]="{ prefix: '$ ', thousands: '.', decimal: ',',precision:0 }" type="text"
+              formControlName="valor" class="form-control" id="inputValor" placeholder="Ingresar valor" />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="generarFacturaCompra()">Generar</button>
+
+</div>

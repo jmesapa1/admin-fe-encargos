@@ -1,52 +1,76 @@
-<div class="modal-header">
-    <h4 class="modal-title">Agregar pago</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
+<div class="modal-header {{tipoGasto.colorClass}}">
+  <h4 class="modal-title">Agregar gasto: {{tipoGasto.nombre}}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
 </div>
 <div class="modal-body">
-    <div class="row">
-        <div class="col-md-12">
-            <form [formGroup]="pagoForm">
-                <div class="form-group row">
-                    <label for="inputEmail3" class="col-sm-3 col-form-label">Concepto</label>
-                    <div class="col-sm-9">
-                        <select   formControlName="concepto" class="form-control form-select" id="inputConcepto"  >
-                          <option value="" selected="true" disabled="disabled">seleccione una opción</option>
-                          <option value="5208">DOMICILIO</option>
-                          <option value="5203">SERVICIOS PUBLICOS - AGUA LEDS</option>
-                          <option value="5224">ALEGRA</option>
-                          <option value="5236">BOLSAS, MARCADORES, CINTA, ETC.</option>
-                          <option value="5246">CHAVA</option>
-                          <option value="5165">DIEGO</option>
-                          <option value="5209">APARTAMENTO PELDAR</option>
-                          <option value="5160">SALARIO TRABAJADORA</option>
-                          <option value="5238">SALARIO JULIAN</option>
-                          <option value="5247">TARJETA CRÉDITO NU</option>
-                          <option value="5250">TARJETA CRÉDITO AMEX</option>
-                          <option value="5251">TARJETA CRÉDITO POPULAR</option>
-                          <option value="5252">TARJETA CRÉDITO RAPPI</option>
-                          <option value="5253">DAVIVIENDA</option>
-
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="inputValor" class="col-sm-3 col-form-label">Valor</label>
-                    <div class="col-sm-9">
-                        <input currencyMask [options]="{ prefix: '$ ', thousands: '.', decimal: ',',precision:0 }" type="text" formControlName="valor" class="form-control" id="inputValor" placeholder="Ingresar valor" />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="inputFecha" class="col-sm-3 col-form-label">Fecha</label>
-                    <div class="col-sm-9">
-                        <input type="date" formControlName="fecha" class="form-control" id="inputFecha" placeholder="Ingresar fecha" />
-                    </div>
-                </div>
-            </form>
+  <div class="row">
+    <div class="col-md-12">
+      <form [formGroup]="pagoForm">
+        <div class="form-group row" *ngIf="!obligacionesMensuales">
+          <label for="inputEmail3" class="col-sm-3 col-form-label">Concepto</label>
+          <div class="col-sm-9">
+            <select formControlName="concepto"  required (ngModelChange)="crearObjetoTipoGasto()" class="form-control form-select"
+              id="inputConcepto">
+              <option value="" selected="true" disabled="disabled">seleccione una opción</option>
+              @for (tipo of gastos ; track tipo.idConcepto) {
+              <option [value]="tipo.concepto">{{ tipo.concepto }}</option>
+              }
+            </select>
+          </div>
         </div>
+         <div class="form-group row" *ngIf="obligacionesMensuales">
+          <label for="inputEmail3" class="col-sm-3 col-form-label">Obligaciones</label>
+          <div class="col-sm-9">
+            <select formControlName="idObligacion"   required (ngModelChange)="crearObjetoTipoObligacion()"   class="form-control form-select"
+              id="inputConcepto">
+              <option value="" selected="true" disabled="disabled">seleccione una opción</option>
+              @for (obligacion of obligaciones$ | async; track obligacion.id) {
+                <option [value]="obligacion.id" *ngIf="obligacion.saldo!=0">{{obligacion.provedor}}, {{obligacion.observacion}}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputValor" class="col-sm-3 col-form-label">Medio de pago</label>
+          <div class="col-sm-9">
+            <select formControlName="idMedioPago" required class="form-control" id="inputValor" required placeholder="Ingresar valor">
+              <option value="" selected="true" disabled="disabled">Seleccione una opción</option>
+              <option value="2">Bancolombia</option>
+              <option value="17">NEQUI</option>
+              <option value="12">NU BANK</option>
+              <option value="18">Tarjeta de credito DIEGO</option>
+              <option value="13">Popular</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputValor" class="col-sm-3 col-form-label">Valor</label>
+          <div class="col-sm-9">
+            <input currencyMask  required [options]="{ prefix: '$ ', thousands: '.', decimal: ',',precision:0 }" type="text"
+              formControlName="valor" class="form-control" id="inputValor" placeholder="Ingresar valor" />
+              <label *ngIf="obligacionesMensuales && obligacionSeleccionada">Maximo : ${{obligacionSeleccionada.saldo | number}}</label>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputFecha" class="col-sm-3 col-form-label">Fecha</label>
+          <div class="col-sm-9">
+            <input type="date" required formControlName="fecha" class="form-control" id="inputFecha"
+              placeholder="Ingresar fecha" />
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="inputFecha" class="col-sm-3 col-form-label">Descripcion</label>
+          <div class="col-sm-9">
+            <input type="text" required  formControlName="descripcion" class="form-control" id="inputValor"
+              placeholder="Ingresar descripcion" />
+          </div>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
-    <button type="button" class="btn btn-outline-secondary" (click)="agregarPago()">Agregar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="agregarPago()" [disabled]="pagoForm.invalid">Agregar</button>
 
 </div>

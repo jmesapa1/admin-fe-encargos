@@ -41,6 +41,9 @@ import { ComprasService } from 'src/app/services/compras/compras.service';
 import { DetallePedidoComponent } from '../modal/detalle-pedido/detalle-pedido.component';
 import { AgregarGastoComponent } from '../modal/agregar-gasto/agregar-gasto.component';
 import { GastosService } from '../../services/gastos/gastos.service';
+import { BancosComponent } from 'src/app/components/bancos/bancos.component';
+import { Observable, of } from 'rxjs';
+import { BancoService } from 'src/app/services/banco/banco.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries | ApexNonAxisChartSeries;
@@ -63,7 +66,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-dash-analytics',
   standalone: true,
-  imports: [SharedModule, NgApexchartsModule, NgbTooltipModule],
+  imports: [SharedModule, NgApexchartsModule, NgbTooltipModule, BancosComponent] ,
   providers: [NgbDropdownConfig],
   templateUrl: './dash-analytics.component.html',
   styleUrls: ['./dash-analytics.component.scss']
@@ -103,9 +106,19 @@ export default class DashAnalyticsComponent {
 
   totalGastos = 0
   totalPagoGastos=0
+
+  lblBalance:any=""
+
+  balanceGeneral = 0
+  obligaciones$: Observable<any[]> = of([]);
+  totalObligaciones: number = 0;
+  bancos: any[] = [];
+  totalBancos = 0;
+  pedidosSaldo = 0
+  compraPendientesSaldo = 0;
   // constructor
   constructor(public pagoStorageService: PagoStorageService, public pedidoStorageService: PedidoStorageService, public pedidoService: PedidosService, public pagoService: PagoService, public db: AngularFireDatabase, public clienteService: ClientesService, private graficaService: GraficaService,
-    private comprasService:ComprasService, private gastosService:GastosService
+    private comprasService:ComprasService, private bancosService:BancoService
   ) {
     //connectFirestoreEmulator(getFirestore(), '127.0.0.1', 8080);
     pedidoService.obtenerPedidos()
@@ -127,26 +140,44 @@ export default class DashAnalyticsComponent {
       mes ="0"+mes
     }
     const ano= hoy.getFullYear()
+    this.obtenerobligaciones()
 
     this.desde= ano+"-"+mes+"-01"
     this.hasta = ano+"-"+mes+"-"+hoy.getDate()
-
+    this.obtenerBancos()
     this.obtenerDetallesPago(this.desde,this.hasta)
-    this.obtenerGastos()
   }
+
+  obtenerobligaciones(){
+    this.obligaciones$ = this.comprasService.GetObligacionesMensuales();
+      this.obligaciones$.subscribe(obligaciones => {
+        console.log("obligaciones - > ",obligaciones)
+        this.totalObligaciones = obligaciones.reduce((acc, compra) => acc + compra.saldo, 0);
+
+      })
+  }
+
+    obtenerPedidos() {
+    this.pedidoService.GetPedidos().subscribe(pedidos => {
+        this.pedidosSaldo = pedidos.reduce((acc, x) => acc + (Number(x.pedido?.balance) || 0), 0);
+      this.compraPendientesSaldo = pedidos.reduce((acc, x) => acc + (x.compraData?.compra?.balance || 0), 0);
+    });
+    }
+
 
   obtenerDetallesPago(desde: string,hasta: string){
     console.log(desde,hasta)
     this.pagoStorageService.obtenerDetallesPago(desde,hasta).subscribe(resp=>{
       this.pagosDetalle=resp.data
+      this.pagosDetalle.balanceGeneral= this.totalBancos - this.totalObligaciones +this.pedidosSaldo + this.pagosDetalle.valorPrestamosPorCobrar  - this.compraPendientesSaldo
       this.crearTarjetas()
 
     })
 
     this.pagoStorageService.obtenerPagos(desde,hasta).subscribe(resp=>{
       this.pagos = resp.data.filter((x: undefined)=>x!==undefined)
+      console.log(this.pagos)
       this.pagosDomicilio = this.pagos.reduce((a, b) => {
-        console.log(a,b)
         if (b && b.pago.categories && b.pago.categories[0]&& b.pago.categories[0].id ==="5208") {
           return a + b.pago.amount
         }else{
@@ -160,7 +191,7 @@ export default class DashAnalyticsComponent {
 
     this.cards = [
       {
-        background: 'bg-c-blue',
+        background: 'bg-c-gold',
         title: 'Total pedidos',
         icon: 'icon-shopping-cart',
         text: '',
@@ -176,28 +207,48 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-blue',
+        background: 'bg-c-red',
+        title: 'Obligaciones por pagar este mes',
+        icon: 'icon-repeat',
+        text: '',
+        img: "assets/images/arrow-red.webp",
+        widthImg: "60px",
+        number: this.totalObligaciones,
+        //no: 0
+
+      },
+      {
+        background: 'bg-c-blue-addi',
         title: 'Ventas ADDI',
         icon: 'icon-shopping-cart',
         text: '',
         img: "assets/images/addi-logo.avif",
-        widthImg: "50px",
+        widthImg: "90px",
         number: this.pagosDetalle.totalPagosAddi,
         no: ""
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-yellow-siste',
         title: 'Ventas SISTECREDITO',
         icon: 'icon-repeat',
         text: '',
         img: "assets/images/sistecredito-logo.png",
-        widthImg: "60px",
+        widthImg: "100px",
         number: this.pagosDetalle.totalPagosSistecredito,
         // no: 0
 
       },
+
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-red',
+        title: 'Total de compras',
+        icon: 'icon-shopping-cart',
+        text: '',
+        number: this.pagosDetalle.totalCompras,
+        no: ""
+      },
+       {
+        background: 'bg-c-red',
         title: 'Compras pendientes',
         icon: 'icon-repeat',
         text: '',
@@ -207,57 +258,8 @@ export default class DashAnalyticsComponent {
         //no2: ""
 
       },
-      {
-        background: 'bg-c-red',
-        title: 'Total de compras',
-        icon: 'icon-shopping-cart',
-        text: '',
-        number: this.pagosDetalle.totalCompras,
-        no: ""
-      },
-      {
-        background: 'bg-c-yellow',
-        title: 'Gasto domicilios',
-        img: 'assets/icon/dollar-sign.svg',
-
-        text: '',
-        number: this.pagosDomicilio,
-        // no: 0,
-        //no2: 0
-
-      },
-      {
-        background: 'bg-c-yellow',
-        title: 'Facturas provedor pagas',
-        img: 'assets/icon/dollar-sign.svg',
-
-        text: '',
-        number: this.pagosDetalle.pagosProvedor,
-        // no: 0,
-        //no2: 0
-
-      },
-      {
-        background: 'bg-c-purple',
-        title: 'Cartera',
-        img: 'assets/icon/dollar-sign.svg',
-        text: '',
-        widthImg: "30px",
-        number: this.pagosDetalle.totalCartera,
-        no: ""
-      },
-
-        {
-        background: 'bg-c-purple',
-        title: 'Pagos Transferencias',
-        img: 'assets/icon/dollar-sign.svg',
-        text: '',
-        widthImg: "30px",
-        number: this.pagosDetalle.totalPagosTransferencia,
-        no: ""
-      },
-      {
-        background: 'bg-c-blue',
+       {
+        background: 'bg-c-blue-soft',
         title: 'Desembolsos ADDI',
         icon: 'icon-shopping-cart',
         text: '',
@@ -267,7 +269,7 @@ export default class DashAnalyticsComponent {
         no: ""
       },
       {
-        background: 'bg-c-yellow',
+        background: 'bg-c-yellow-soft',
         title: 'Desembolsos SISTECREDITO',
         icon: 'icon-repeat',
         text: '',
@@ -278,30 +280,24 @@ export default class DashAnalyticsComponent {
 
       },
 
-
       {
-        background: 'bg-c-purple',
-        title: 'En transito a Medellín (Saldo)',
-        icon: 'icon-send',
+        background: 'bg-c-green',
+        title: 'Cartera',
+        img: 'assets/icon/dollar-sign.svg',
         text: '',
-        img: "assets/icon/truck.svg",
         widthImg: "30px",
-        number: this.pagosDetalle.cantidadPedidosEnTransito,
-        number2: this.pagosDetalle.valorSaldoPedidosEnTransito,
-        //no: 0,
-        //no2: 0
-
+        number: this.pagosDetalle.totalCartera,
+        no: ""
       },
-      {
-        background: 'bg-c-blue',
-        title: 'Espera de despacho',
-        icon: 'icon-calendar',
-        text: '',
-        number: this.pagosDetalle.cantidadEsperaDespacho,
-        number2: this.pagosDetalle.valorSaldoEsperaDespacho,
-       // no: 0,
-        //no2: 0
 
+        {
+        background: 'bg-c-green',
+        title: 'Pagos Transferencias',
+        img: 'assets/icon/dollar-sign.svg',
+        text: '',
+        widthImg: "30px",
+        number: this.pagosDetalle.totalPagosTransferencia,
+        no: ""
       },
 
 
@@ -366,20 +362,26 @@ export default class DashAnalyticsComponent {
             console.log(data)
             if(data.success){
               this.obtenerDetallesPago(this.desde,this.hasta)
-              this.obtenerGastos()
             }
           })
   }
 
-  obtenerGastos(){
-    this.gastosService.obtenerGastosFijos().subscribe(resp=>{
-      if(resp){
-        this.gastos = resp.data.conceptos
-        this.totalGastos = this.gastos.reduce((a:any,b:any) => a + Number(b.valor), 0);
-        this.totalPagoGastos = this.gastos.reduce((a:any,b:any) => a + Number(b.valorPagado), 0);
-
+   obtenerBancos(){
+    console.log("Obteniendo bancos...");
+    this.bancosService.obtenerBancos().subscribe({
+      next: (resp: any) => {
+        this.bancos = resp.data.map((banco: any) => ({
+          ...banco,
+          class: banco.balance > 0 ? 'bg-c-green order-card' : 'bg-c-red order-card'
+        }));
+        this.totalBancos = this.bancos.reduce((acc, banco) => acc + banco.balance, 0);
+        console.log("Bancos obtenidos:", this.bancos);
+      },
+      error: (error: any) => {
+        console.log(error);
       }
-    })
+    });
   }
+
 
 }

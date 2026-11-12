@@ -1,0 +1,26 @@
+<div class="modal-header bg-c-yellow">
+  <h4 class="modal-title">Agregar novedad: Pedido {{pedido.id}} - {{pedido.cliente.name}}</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.close('Close click')"></button>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <b>{{pedido.pedido.items[0].name}}</b>
+      <hr/>
+      <form [formGroup]="novedadForm">
+        <div class="form-group row">
+          <label for="inputFecha" class="col-sm-3 col-form-label">Novedad</label>
+          <div class="col-sm-9">
+            <input type="text" required  formControlName="novedad" class="form-control" id="inputValor"
+              placeholder="Ingresar novedad" />
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="agregarNovedad()" [disabled]="novedadForm.invalid">Agregar</button>
+
+</div>

@@ -95,3 +95,165 @@ span .badge.estado{
   color: rgba(255, 255, 255, 0.8);
 }
 
+.fondo-color-negro{
+  background: black;
+  font-size: 10px;
+}
+
+.bg-c-blue-addi {
+    background: linear-gradient(135deg, #007bff 0%, #0056d2 50%, #003d99 100%) !important;
+    box-shadow:
+        0 10px 30px rgba(0, 123, 255, 0.35),
+        0 4px 12px rgba(0, 86, 210, 0.25);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-blue-addi:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(0, 123, 255, 0.45),
+        0 8px 18px rgba(0, 86, 210, 0.35);
+}
+
+.bg-c-yellow-siste {
+    background: linear-gradient(135deg, #ffcb80 0%, #ffb347 50%, #ff9800 100%) !important;
+    box-shadow:
+        0 10px 30px rgba(255, 179, 71, 0.35),
+        0 4px 12px rgba(255, 152, 0, 0.25);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-yellow-siste:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(255, 179, 71, 0.45),
+        0 8px 18px rgba(255, 152, 0, 0.35);
+}
+
+.bg-c-red {
+    background: linear-gradient(135deg, #ff5370 0%, #ff3d5a 50%, #d81b60 100%) !important;
+    box-shadow:
+        0 10px 30px rgba(255, 83, 112, 0.35),
+        0 4px 12px rgba(216, 27, 96, 0.25);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-red:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(255, 83, 112, 0.45),
+        0 8px 18px rgba(216, 27, 96, 0.35);
+}
+
+.bg-c-green {
+    background: linear-gradient(135deg, #2ed8b6 0%, #1abc9c 50%, #0f8f7a 100%) !important;
+    box-shadow:
+        0 10px 30px rgba(46, 216, 182, 0.35),
+        0 4px 12px rgba(26, 188, 156, 0.25);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-green:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(46, 216, 182, 0.45),
+        0 8px 18px rgba(26, 188, 156, 0.35);
+}
+
+.bg-c-blue-soft {
+    background: linear-gradient(135deg, #6ec6ff 0%, #42a5f5 50%, #1e88e5 100%) !important;
+    box-shadow:
+        0 10px 30px rgba(110, 198, 255, 0.28),
+        0 4px 12px rgba(66, 165, 245, 0.20);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-blue-soft:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(110, 198, 255, 0.38),
+        0 8px 18px rgba(66, 165, 245, 0.28);
+}
+
+
+.bg-c-yellow-soft {
+    background: linear-gradient(135deg, #ffe8a3 0%, #ffd54f 50%, #ffca28 100%) !important;
+    box-shadow:
+        0 10px 30px rgba(255, 213, 79, 0.28),
+        0 4px 12px rgba(255, 202, 40, 0.20);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-yellow-soft:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(255, 213, 79, 0.38),
+        0 8px 18px rgba(255, 202, 40, 0.28);
+}
+
+.bg-c-gold {
+    background: linear-gradient(
+        135deg,
+        #fff3b0 0%,
+        #f7d774 18%,
+        #d4af37 38%,
+        #ffd700 52%,
+        #b8860b 72%,
+        #8c6a00 100%
+    ) !important;
+    box-shadow:
+        0 10px 30px rgba(212, 175, 55, 0.40),
+        0 4px 12px rgba(184, 134, 11, 0.30);
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.bg-c-gold::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    transition: all 0.75s ease-in-out;
+}
+
+.bg-c-gold:hover::before {
+    left: 130%;
+}
+
+.bg-c-gold:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 18px 40px rgba(212, 175, 55, 0.50),
+        0 8px 18px rgba(184, 134, 11, 0.38);
+}

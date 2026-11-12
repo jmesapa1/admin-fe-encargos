@@ -13,3 +13,22 @@
 select{
     padding: 5px;
 }
+
+
+
+.cancelado{
+  background: rgba(247, 143, 143, 0.248) !important;
+}
+
+
+.color-white{
+  color: white !important;
+}
+
+.buttonAction{
+  min-width: 250px !important;
+  button{
+    max-width: 50% !important;
+    margin-bottom: 5px !important;
+  }
+}

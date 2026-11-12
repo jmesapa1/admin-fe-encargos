@@ -1,0 +1,47 @@
+<div class="row">
+  @for (tipo of tipoGastos; track tipo.id) {
+  <div class="col-sm-6 col-md-4 col-xl-3">
+    <app-card cardTitle={{tipo.nombre}} class="table-xs" headerClass="{{tipo.colorClass}}" (click)="agregarGasto(tipo)"
+      [options]="false">
+      <img src="{{tipo.img}}" width="{{tipo.width}}" class="float-start" />
+      <h1>
+        ${{ tipo.valor | number }}
+      </h1>
+      @if(tipo.aplicaFiltro){
+      <h6>Desde: {{fechainicio}} <br> Hasta: {{fechafin}}</h6>
+      }
+
+    </app-card>
+  </div>
+  }
+  <div class="col-sm-6 col-md-4 col-xl-9">
+    <h2>Obligaciones mensuales pendientes</h2>
+    <div class="row">
+      @for (obligacion of obligaciones$ | async; track obligacion.id) {
+      @if(obligacion.saldo!=0){
+      <div class="col-sm-6 col-md-4 col-xl-3">
+        <app-card [hidHeader]="true" cardClass="bg-c-red order-card mb-2 objectClickeable">
+          <h6 class="m-b-0 text-white">{{ obligacion.provedor }}</h6>
+          <h3>${{ obligacion.saldo | number}}</h3>
+          <span><b>{{obligacion.periodo}}</b></span>
+          <h6 class="float-start text-black">{{obligacion.observacion}}</h6>
+        </app-card>
+      </div>
+      }@else{
+      <div class="col-sm-6 col-md-4 col-xl-3">
+        <app-card [hidHeader]="true" cardClass="bg-c-gray order-card mb-2 objectClickeable">
+          <h6 class="m-b-0 text-black">{{ obligacion.provedor }}</h6>
+          <h3>${{ obligacion.saldo | number}}</h3>
+          <span class="m-b-0 text-black"><b>{{obligacion.periodo}}</b></span>
+          <h6 class="float-start text-black">{{obligacion.observacion}}</h6>
+        </app-card>
+      </div>
+      }
+
+      }
+
+    </div>
+
+
+  </div>
+</div>

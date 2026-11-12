@@ -21,7 +21,7 @@ export class PagoStorageService {
       params = params.append('fechainicio', desde);
       params = params.append('fechafin', hasta);
     }
-    return this.http.get<any[]>(environment.apiUrl+"pagos-data",{params:params})
+    return this.http.get<any[]>(environment.apiUrl+"app/pagos-data",{params:params})
   }
 
   agregarPagos() {
@@ -37,10 +37,10 @@ export class PagoStorageService {
       params = params.append('fechainicio', fechainicio);
       params = params.append('fechafin', fechafin);
     }
-    return this.http.get<any>(environment.apiUrl+"pagos-detalle",{params:params})
+    return this.http.get<any>(environment.apiUrl+"app/pagos-detalle",{params:params})
 
   }
-  
+
   getPagos$(): Observable<any[]> {
     return this.pagos$.asObservable();
   }

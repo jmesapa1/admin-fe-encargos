@@ -127,7 +127,8 @@ export class FilterableTable {
 
 	matches(pedido: any, input: string): boolean {
 		return (
-			pedido?.clienteNombre.toLowerCase().includes(input.toLowerCase()) 
+			pedido?.clienteNombre.toLowerCase().includes(input.toLowerCase()) ||
+      pedido?.pedido?.items[0]?.name.toLowerCase().includes(input.toLowerCase())
 		);
 	}
 
@@ -139,7 +140,7 @@ export class FilterableTable {
 		console.log(this.allValues, sortColumn, sortDirection)
 		// 2. filter
 		countries = countries.filter((country) => this.matches(country, searchTerm));
-		
+
 
 		const total = countries.length;
 
@@ -149,5 +150,5 @@ export class FilterableTable {
 		console.log(countries,searchTerm)
 		return of({ countries, total });
 	}
-	
+
 }
