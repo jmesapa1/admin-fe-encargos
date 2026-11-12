@@ -1,3 +1,4 @@
+import { PaymentSubmission } from 'src/app/shared/payment-submission';
 import { DecimalPipe, CommonModule } from '@angular/common';
 import { Component, inject, Input, signal, WritableSignal } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -16,6 +17,7 @@ import { ObligacionService } from 'src/app/services/obligacion/obligacion.servic
   styleUrl: './agregar-gasto.component.scss'
 })
 export class AgregarGastoComponent {
+  readonly envio = new PaymentSubmission();
   @Input() public tipoGasto: any;
   closeResult: WritableSignal<string> = signal('');
 
@@ -70,7 +72,6 @@ export class AgregarGastoComponent {
       this.obligacionesMensuales = true
       this.obligaciones$ = this.comprasService.GetObligacionesMensuales();
       this.obligaciones$.subscribe(compras => {
-        console.log(compras)
       })
     }
   }
@@ -85,9 +86,8 @@ export class AgregarGastoComponent {
 
 
   agregarPago() {
-    console.log(this.pagoForm.value)
     if (!this.obligacionesMensuales) {
-      this.pagoService.agregarEgreso(this.pagoForm.value).subscribe((resp: any) => {
+      this.envio.enviar(() => this.pagoService.agregarEgreso(this.pagoForm.value) as Observable<any>, (resp: any) => {
         if (resp.success) {
           this.activeModal.close(resp)
         }
@@ -100,7 +100,7 @@ export class AgregarGastoComponent {
 
   agregarPagoObligacion() {
 
-    this.obligacionService.pagarSaldoFacturaCompra({...this.pagoForm.value,obligacion : this.obligacionSeleccionada.obligacion}).subscribe((resp: any) => {
+    this.envio.enviar(() => this.obligacionService.pagarSaldoFacturaCompra({...this.pagoForm.value,obligacion : this.obligacionSeleccionada.obligacion}) as Observable<any>, (resp: any) => {
       if (resp.success) {
         this.activeModal.close(resp)
       }

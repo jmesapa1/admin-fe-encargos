@@ -1,5 +1,5 @@
 // angular import
-import { Component, ViewChild, OnDestroy, inject } from '@angular/core';
+import { Component, ViewChild, DestroyRef, inject } from '@angular/core';
 
 // project import
 import { SharedModule } from 'src/app/theme/shared/shared.module';
@@ -42,7 +42,8 @@ import { DetallePedidoComponent } from '../modal/detalle-pedido/detalle-pedido.c
 import { AgregarGastoComponent } from '../modal/agregar-gasto/agregar-gasto.component';
 import { GastosService } from '../../services/gastos/gastos.service';
 import { BancosComponent } from 'src/app/components/bancos/bancos.component';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BancoService } from 'src/app/services/banco/banco.service';
 
 export type ChartOptions = {
@@ -116,6 +117,27 @@ export default class DashAnalyticsComponent {
   totalBancos = 0;
   pedidosSaldo = 0
   compraPendientesSaldo = 0;
+  balanceError = '';
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly ready = { bancos: false, obligaciones: false, pedidos: false, detalle: false };
+  private detailRequest?: Subscription;
+  private paymentsRequest?: Subscription;
+
+  private recalcularBalance(): void {
+    if (!this.pagosDetalle) return;
+    this.pagosDetalle.balanceGeneral = undefined;
+    if (this.balanceError || !Object.values(this.ready).every(Boolean)) return;
+    // Existing business formula, unchanged.
+    this.pagosDetalle.balanceGeneral = this.totalBancos - this.totalObligaciones + this.pedidosSaldo
+      + this.pagosDetalle.valorPrestamosPorCobrar - this.compraPendientesSaldo;
+    this.crearTarjetas();
+  }
+
+  private falloBalance(): void {
+    this.balanceError = 'No se pudo completar el balance. Recarga para consultar de nuevo.';
+    this.recalcularBalance();
+  }
+
   // constructor
   constructor(public pagoStorageService: PagoStorageService, public pedidoStorageService: PedidoStorageService, public pedidoService: PedidosService, public pagoService: PagoService, public db: AngularFireDatabase, public clienteService: ClientesService, private graficaService: GraficaService,
     private comprasService:ComprasService, private bancosService:BancoService
@@ -131,7 +153,6 @@ export default class DashAnalyticsComponent {
 
     comprasService.obtenerComprasData().subscribe(resp=>{
       this.compras=resp.data.filter((x: undefined)=>x!==undefined)
-      console.log(this.pagos)
     })
 
     const hoy = new Date()
@@ -140,51 +161,64 @@ export default class DashAnalyticsComponent {
       mes ="0"+mes
     }
     const ano= hoy.getFullYear()
+    this.obtenerPedidos()
     this.obtenerobligaciones()
 
     this.desde= ano+"-"+mes+"-01"
-    this.hasta = ano+"-"+mes+"-"+hoy.getDate()
+    this.hasta = ano+"-"+mes+"-"+String(hoy.getDate()).padStart(2, "0")
     this.obtenerBancos()
     this.obtenerDetallesPago(this.desde,this.hasta)
   }
 
-  obtenerobligaciones(){
+  obtenerobligaciones() {
     this.obligaciones$ = this.comprasService.GetObligacionesMensuales();
-      this.obligaciones$.subscribe(obligaciones => {
-        console.log("obligaciones - > ",obligaciones)
+    this.obligaciones$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: obligaciones => {
         this.totalObligaciones = obligaciones.reduce((acc, compra) => acc + compra.saldo, 0);
-
-      })
+        this.ready.obligaciones = true;
+        this.recalcularBalance();
+      },
+      error: () => this.falloBalance()
+    });
   }
 
-    obtenerPedidos() {
-    this.pedidoService.GetPedidos().subscribe(pedidos => {
+  obtenerPedidos() {
+    this.pedidoService.GetPedidos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: pedidos => {
         this.pedidosSaldo = pedidos.reduce((acc, x) => acc + (Number(x.pedido?.balance) || 0), 0);
-      this.compraPendientesSaldo = pedidos.reduce((acc, x) => acc + (x.compraData?.compra?.balance || 0), 0);
+        this.compraPendientesSaldo = pedidos.reduce((acc, x) => acc + (x.compraData?.compra?.balance || 0), 0);
+        this.ready.pedidos = true;
+        this.recalcularBalance();
+      },
+      error: () => this.falloBalance()
     });
-    }
+  }
 
-
-  obtenerDetallesPago(desde: string,hasta: string){
-    console.log(desde,hasta)
-    this.pagoStorageService.obtenerDetallesPago(desde,hasta).subscribe(resp=>{
-      this.pagosDetalle=resp.data
-      this.pagosDetalle.balanceGeneral= this.totalBancos - this.totalObligaciones +this.pedidosSaldo + this.pagosDetalle.valorPrestamosPorCobrar  - this.compraPendientesSaldo
-      this.crearTarjetas()
-
-    })
-
-    this.pagoStorageService.obtenerPagos(desde,hasta).subscribe(resp=>{
-      this.pagos = resp.data.filter((x: undefined)=>x!==undefined)
-      console.log(this.pagos)
-      this.pagosDomicilio = this.pagos.reduce((a, b) => {
-        if (b && b.pago.categories && b.pago.categories[0]&& b.pago.categories[0].id ==="5208") {
-          return a + b.pago.amount
-        }else{
-          return a
-        }
-      }, 0)
-    })
+  obtenerDetallesPago(desde: string, hasta: string) {
+    this.detailRequest?.unsubscribe();
+    this.paymentsRequest?.unsubscribe();
+    this.ready.detalle = false;
+    this.recalcularBalance();
+    this.detailRequest = this.pagoStorageService.obtenerDetallesPago(desde, hasta)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: resp => {
+          this.pagosDetalle = { ...resp.data };
+          this.ready.detalle = true;
+          this.crearTarjetas();
+          this.recalcularBalance();
+        },
+        error: () => this.falloBalance()
+      });
+    this.paymentsRequest = this.pagoStorageService.obtenerPagos(desde, hasta)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: resp => {
+          this.pagos = resp.data.filter((x: undefined) => x !== undefined);
+          this.pagosDomicilio = this.pagos.reduce((a, b) => {
+            return b?.pago?.categories?.[0]?.id === '5208' ? a + b.pago.amount : a;
+          }, 0);
+        },
+        error: () => { this.pagos = []; }
+      });
   }
 
   crearTarjetas() {
@@ -359,7 +393,6 @@ export default class DashAnalyticsComponent {
           modal.componentInstance.gasto = gasto
         }
         modal.result.then((data:any) => {
-            console.log(data)
             if(data.success){
               this.obtenerDetallesPago(this.desde,this.hasta)
             }
@@ -367,19 +400,17 @@ export default class DashAnalyticsComponent {
   }
 
    obtenerBancos(){
-    console.log("Obteniendo bancos...");
-    this.bancosService.obtenerBancos().subscribe({
+    this.bancosService.obtenerBancos().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (resp: any) => {
         this.bancos = resp.data.map((banco: any) => ({
           ...banco,
           class: banco.balance > 0 ? 'bg-c-green order-card' : 'bg-c-red order-card'
         }));
         this.totalBancos = this.bancos.reduce((acc, banco) => acc + banco.balance, 0);
-        console.log("Bancos obtenidos:", this.bancos);
+        this.ready.bancos = true;
+        this.recalcularBalance();
       },
-      error: (error: any) => {
-        console.log(error);
-      }
+      error: () => this.falloBalance()
     });
   }
 

@@ -1,3 +1,4 @@
+import { PaymentSubmission } from 'src/app/shared/payment-submission';
 import { DecimalPipe, CommonModule } from '@angular/common';
 import { Component, inject, Input, signal, WritableSignal } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -14,6 +15,7 @@ import { CurrencyMaskModule } from 'ng2-currency-mask';
   styleUrl: './pago-factura.component.scss'
 })
 export class PagoFacturaComponent {
+  readonly envio = new PaymentSubmission();
   @Input() public pedido: any;
   closeResult: WritableSignal<string> = signal('');
 
@@ -34,10 +36,9 @@ export class PagoFacturaComponent {
   }
 
   agregarPago() {
-    console.log(this.pagoForm.value)
-    this.pagoService.abonarFacturaPedido({...this.pagoForm.value,idPedido:this.pedido.id}).subscribe((resp: any) => {
+    this.envio.enviar(() => this.pagoService.abonarFacturaPedido({...this.pagoForm.value,idPedido:this.pedido.id}), (resp: any) => {
       if (resp.success) {
-        if (resp.response.invoices[0].balance === 0 && this.pedido.estado !== 'Falta comprar') {
+        if (resp.response?.invoices?.[0]?.balance === 0 && this.pedido.estado !== 'Falta comprar') {
           const pedidoEntregado = confirm('El balance del pedido quedó en $0. ¿El pedido ya fue entregado al cliente?');
           if (pedidoEntregado && this.pedido.estado !== 'Entregado cliente') {
             this.pedidosService.cambiarEstadoCompra('Entregado cliente', this.pedido.id).subscribe({

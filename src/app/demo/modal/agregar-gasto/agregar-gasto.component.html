@@ -69,8 +69,10 @@
     </div>
   </div>
 </div>
+<p class="px-3" role="alert" *ngIf="envio.error">{{ envio.error }}</p>
+<p class="px-3" role="status" *ngIf="envio.enviando">Procesando pago…</p>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-secondary" (click)="activeModal.close('Close click')">Cerrar</button>
-  <button type="button" class="btn btn-outline-secondary" (click)="agregarPago()" [disabled]="pagoForm.invalid">Agregar</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="agregarPago()" [disabled]="pagoForm.invalid || envio.bloqueado">Agregar</button>
 
 </div>

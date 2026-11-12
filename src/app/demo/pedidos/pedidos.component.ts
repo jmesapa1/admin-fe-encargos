@@ -200,7 +200,6 @@ export default class PedidosComponent {
 
       // Totales
       this.pedidosSaldo = pedidos.reduce((acc, x) => acc + (Number(x.pedido?.balance) || 0), 0);
-      console.log("pedidos saldo", this.pedidosSaldo)
       this.compraPendientesSaldo = pedidos.reduce((acc, x) => acc + (x.compraData?.compra?.balance || 0), 0);
       this.pedidosPendientes = pedidos.filter(pedido => !pedido.compra && !pedido.cancelado && !(pedido.pedido.status === 'closed' && !pedido.cancelado && pedido.pago.length === 0))
 
@@ -228,14 +227,11 @@ export default class PedidosComponent {
       this.compraPendientes = this.comprasGeneral.filter(compra => !compra.pedido && compra.compra.termsConditions !== "ENTREGA INMEDIATA" && !compra.entregaInmediata && !compra.cancelado &&
         !(compra.compra.payments.length === 0 && compra.compra.status === 'closed' && compra.compra.balance !== 0))
       this.compraEntregaInmediata = this.comprasGeneral.filter(compra => compra.entregaInmediata)
-      console.log("compras entrega inmediata", this.compraEntregaInmediata)
 
-      console.log(this.compraPendientes)
     })
   }
 
   asignarCompra(optionCompra: any, pedidoId: string) {
-    console.log(this.compraPendientes)
     let productoPedido = this.pedidosOriginal.find(p => p.id === pedidoId)?.pedido.items[0].name;
     let productoCompra = this.compraPendientes.find(c => c.id === optionCompra.value)?.compra.purchases.items[0].name;
 
@@ -245,11 +241,9 @@ export default class PedidosComponent {
     }
     this.pedidoService.asignarCompra(optionCompra.value, pedidoId).subscribe({
       next: (data: any) => {
-        console.log(data)
         //this.obtenerCompras()
       },
       error: (error: any) => {
-        console.log(error)
       },
     });
 
@@ -259,32 +253,20 @@ export default class PedidosComponent {
 
     this.pedidoService.cambiarEstadoCompra(estado, idFactura).subscribe({
       next: (data: any) => {
-        console.log(data)
       },
       error: (error) => {
-        console.log(error)
       },
     });
   }
 
   cambiarEstadoCompra(estado: string, idFactura: string, index: number) {
-    let novedad = ""
-    if (this.pedidosOriginal[index].novedades && this.pedidosOriginal[index].novedades.length > 0) {
-      if (estado === "Espera de despacho") {
-      } else {
-        this.cambiarEstadoCompraApi(estado, idFactura, index);
-      }
-      novedad = this.pedidosOriginal[index].novedades.map((n: any) => n.novedad).join(", ")
-      if (confirm("El pedido tiene las siguientes novedades: " + novedad)) {
-        this.cambiarEstadoCompraApi(estado, idFactura, index);
-      }
-    }else{
-      this.cambiarEstadoCompraApi(estado, idFactura, index);
+    const pedido = this.pedidosOriginal.find(p => p.id === idFactura);
+    if (!pedido) return;
+    if (pedido.novedades?.length) {
+      const novedades = pedido.novedades.map((n: any) => n.novedad).join(', ');
+      if (!confirm('El pedido tiene las siguientes novedades: ' + novedades)) return;
     }
-
-
-
-
+    this.cambiarEstadoCompraApi(estado, idFactura, index);
   }
 
   obtenerColor(tracking: string) {
@@ -308,7 +290,6 @@ export default class PedidosComponent {
 
     const modal = this.modalService.open(PagoCompraComponent, { ariaLabelledBy: 'modal-basic-title' })
     modal.componentInstance.pedido = pedido
-    console.log(pedido)
   }
   refrescarPedido() {
 
@@ -320,10 +301,8 @@ export default class PedidosComponent {
 
     modal.result.then(
       (data) => {
-        console.log('El modal fue cerrado con el siguiente dato:', data);
       },
       (reason) => {
-        console.log('El modal fue cerrado o cancelado. Razón:', reason);
       }
     );
   }
@@ -350,10 +329,8 @@ export default class PedidosComponent {
   cancelarPedido(pedido: any) {
     this.pedidoService.cancelarPedido({ id: pedido.id, compra: pedido.compra }).subscribe({
       next: (data: any) => {
-        console.log(data)
       },
       error: (error) => {
-        console.log(error)
       },
     });
   }
@@ -361,10 +338,8 @@ export default class PedidosComponent {
   cancelarCompra(compra: any) {
     this.pedidoService.cancelarCompra({ compraId: compra.id }).subscribe({
       next: (data: any) => {
-        console.log(data)
       },
       error: (error) => {
-        console.log(error)
       },
     });
   }
@@ -416,10 +391,8 @@ export default class PedidosComponent {
 
     this.comprasService.asignarComoEntregainmediata(compra.id, isChecked).subscribe({
       next: (data: any) => {
-        console.log(data)
       },
       error: (error: any) => {
-        console.log(error)
       },
     });
   }
@@ -455,7 +428,6 @@ export default class PedidosComponent {
     if (this.pedidosRecienLlegados.length === 5) {
       this.confirmarLLegada()
     }
-    console.log(this.pedidosRecienLlegados);
   }
 
   confirmarLLegada() {

@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+import { PaymentSubmission } from 'src/app/shared/payment-submission';
 import { DecimalPipe, CommonModule } from '@angular/common';
 import { Component, inject, Input, signal, WritableSignal } from '@angular/core';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -14,6 +16,7 @@ import { PedidosService } from 'src/app/services/pedidos/pedidos.service';
   styleUrl: './pago-compra.component.scss'
 })
 export class PagoCompraComponent {
+  readonly envio = new PaymentSubmission();
   @Input() public pedido: any;
   closeResult: WritableSignal<string> = signal('');
 
@@ -35,20 +38,12 @@ export class PagoCompraComponent {
   }
 
   agregarPago() {
-    console.log(this.pagoForm)
-
-    let data = { idPedido: this.pedido.id, idCompra: this.pedido.compraData.id, saldo: this.pedido.saldoCompra, idMedioPago: this.pagoForm.value.idMedioPago }
-    this.pedidoService.pagarSaldoFacturaCompra(data).subscribe({
-      next: (data: any) => {
-        console.log(data)
-        this.activeModal.close(data)
-
-      },
-      error: (error: any) => {
-        console.log(error)
-      },
-    });
-
+    const data = { idPedido: this.pedido.id, idCompra: this.pedido.compraData.id,
+      saldo: this.pedido.saldoCompra, idMedioPago: this.pagoForm.value.idMedioPago };
+    this.envio.enviar(() => this.pedidoService.pagarSaldoFacturaCompra(data) as Observable<any>,
+      (response: any) => this.activeModal.close(response),
+      // Preserve legacy HTTP response bodies, but do not close on explicit failure.
+      response => response?.success !== false);
   }
 
   private getDismissReason(reason: any): string {

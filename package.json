@@ -14,7 +14,8 @@
     "test:security": "node --test scripts/security.test.mjs",
     "check:artifact": "node scripts/check-artifact.mjs",
     "postbuild": "npm run check:artifact",
-    "postbuild-prod": "npm run check:artifact"
+    "postbuild-prod": "npm run check:artifact",
+    "test:regression": "ng test --main src/regression-test.ts --ts-config tsconfig.regression.json --watch=false --browsers=ChromeHeadless --include=src/app/regression/stabilization.spec.ts --include=src/app/interceptors/loader-intercpetor.interceptor.spec.ts"
   },
   "private": true,
   "dependencies": {

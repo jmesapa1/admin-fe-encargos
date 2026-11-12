@@ -49,7 +49,9 @@
     <app-card [hidHeader]="true" cardClass="bg-c-gold order-card mb-2 objectClickeable">
       <img class="float-start" style="color:white;width: 50px" src="assets/icon/dollar-sign.svg">
       <h6 class="text-black"><b> Balance General</b></h6>
-      <h5 class="text-black" *ngIf="this.pagosDetalle">${{ this.pagosDetalle.balanceGeneral | number }}</h5>
+      <p role="status" *ngIf="!balanceError && pagosDetalle?.balanceGeneral === undefined">Calculando balance…</p>
+      <p role="alert" *ngIf="balanceError">{{ balanceError }}</p>
+      <h5 class="text-black" *ngIf="this.pagosDetalle?.balanceGeneral !== undefined">${{ this.pagosDetalle.balanceGeneral | number }}</h5>
     </app-card>
   </div>
   <ng-container>
